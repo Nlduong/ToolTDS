@@ -71,8 +71,10 @@ namespace AutoTDSYouTube
             var i = 0;
             delay(1);
           
-                Task t = new Task(async () =>
-            {
+            //    Task t = new Task(async () =>
+            //{
+            for(int k = 0 ; k < int.Parse(txtMaxJob.Text); k++)
+            { 
                 foreach (Account account in listAccount)
                 {
                     ChromeOptions chromeOptions = new ChromeOptions();
@@ -93,26 +95,7 @@ namespace AutoTDSYouTube
                     //chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
                     chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=1200,850", "--disable-gpu");
                     driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
-                    //driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromSeconds(30.0));
-                    //driver.Navigate().GoToUrl("https://accounts.google.com/ServiceLogin/signinchooser?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&ifkv=ARgdvAtbsFtyS9LIFGa8UA8vf9lcW6Dzgi01LlhKYhrArQri81_FA3S8LwVqUFUmMpLwDteQP4SXbw&flowName=GlifWebSignIn&flowEntry=ServiceLogin");
-                    //IWebElement query = driver.FindElement(By.CssSelector("input[type='email']"));
-                    //query.SendKeys(account.idgg);
-                    //query = driver.FindElement(By.CssSelector("div#identifierNext"));
-                    //query.Click();
-                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
-                    //query = driver.FindElement(By.CssSelector("input[name='Passwd']"));
-                    //query.SendKeys(account.passgg);
-                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-                    //Thread.Sleep(500);
-
-                    //query = driver.FindElement(By.XPath(".//*[@id='passwordNext']"));
-                    //query.Click();
-                    //String oldTab = driver.CurrentWindowHandle.ToString();
-                    //Thread.Sleep(5000);
-
-                    //IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                    //js.ExecuteScript("window.open('_blank', 'tab2');");
-                    //driver.SwitchTo().Window("tab2");
+                 
                     driver.Navigate().GoToUrl("https://traodoisub.com/");
                     IWebElement query = driver.FindElement(By.XPath("//*[@id=\'username\']"));
                     query.SendKeys(account.idtds);
@@ -122,27 +105,16 @@ namespace AutoTDSYouTube
                     Thread.Sleep(2000);
                     query = driver.FindElement(By.XPath("//*[@id=\"loginclick\"]"));
                     Thread.Sleep(2000);
-                    query.Click();
-                    //var tabs = driver.WindowHandles;
-                    //if (tabs.Count > 1)
-                    //{
-                    //    driver.SwitchTo().Window(oldTab);
-                    //    Thread.Sleep(4000);
-                    //    driver.Close();
-                    //    driver.SwitchTo().Window(tabs[1]);
-                    //}
-                    //js.ExecuteScript("window.open('_blank', 'tab3');");
-                    //driver.SwitchTo().Window("tab3");
-                    //driver.Navigate().GoToUrl("https://www.tiktok.com/en/");
+                    query.Click();                   
                     delay(5);
                     if (chkTKsub.Checked)
                     {
-                        await WorkSubscribeTikTok();
+                         WorkSubscribeTikTok();
                     }
 
                     if (chkCommentTT.Checked)
                     {
-                        await WorkCommentTikTok();
+                         WorkCommentTikTok();
                     }
                     // WorkSubscribeTikTok();
                     //();
@@ -151,17 +123,17 @@ namespace AutoTDSYouTube
                     //    break;
                     if (chkLikeTT.Checked)
                     {
-                        await WorkTimTikTok();
+                         WorkTimTikTok();
                     }
 
                     delay(30);
                 }
 
-            });
-                delay(1);
-                t.Start();
+          //  });
+                //delay(1);
+                //t.Start();
             
-            //  }
+             }
         }
 
         private async Task WorkSubscribeTikTok()

@@ -88,11 +88,11 @@
             // 
             // txtMaxJob
             // 
-            this.txtMaxJob.Location = new System.Drawing.Point(601, 9);
+            this.txtMaxJob.Location = new System.Drawing.Point(851, 193);
             this.txtMaxJob.Name = "txtMaxJob";
             this.txtMaxJob.Size = new System.Drawing.Size(100, 22);
             this.txtMaxJob.TabIndex = 8;
-            this.txtMaxJob.Text = "100";
+            this.txtMaxJob.Text = "10";
             // 
             // dataGridView1
             // 
