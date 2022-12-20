@@ -127,6 +127,7 @@ namespace AutoTDSYouTube
                     }
 
                     delay(30);
+                    driver.Close();
                 }
 
           //  });
@@ -136,7 +137,7 @@ namespace AutoTDSYouTube
              }
         }
 
-        private async Task WorkSubscribeTikTok()
+        private void WorkSubscribeTikTok()
         {            
             int i = 0;
             int j = 0;
@@ -201,7 +202,7 @@ namespace AutoTDSYouTube
                     break;
             }
         }
-        private async Task WorkTimTikTok()
+        private void WorkTimTikTok()
         {
           
             int i = 0;
@@ -223,13 +224,13 @@ namespace AutoTDSYouTube
                 string link = item.GetAttribute("title");
                 dataGridView1.Invoke(new Action(() =>
                 {
-                    dataGridView1.Rows.Add(TongJob + 1, "Subscribe Tiktok", link, "Mở Link");
+                    dataGridView1.Rows.Add(TongJob + 1, "Tim Tiktok", link, "Mở Link");
                     dataGridView1.CurrentCell = dataGridView1.Rows[TongJob].Cells[2];
                 }));
                 delay(10);
                 var tabs = driver.WindowHandles;
                 driver.SwitchTo().Window(tabs[1]);
-                var sbubt = driver.FindElements(By.XPath("//*[@id=\"app\"]/div[2]/div[2]/div[1]/div[3]/div[1]/div[1]/div[1]/div[4]/button[1]/span"));
+                var sbubt = driver.FindElements(By.XPath("//*[@id=\"app\"]/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[4]/button[1]/span"));
 
                 if (sbubt.Count == 0)
                 {
@@ -239,7 +240,7 @@ namespace AutoTDSYouTube
                 }
                 else
                 {
-                    dataGridView1.Rows[TongJob].Cells[3].Value = "Click Subscribe";
+                    dataGridView1.Rows[TongJob].Cells[3].Value = "Click Tim";
                     sbubt[0].Click();
                     dataGridView1.Rows[TongJob].Cells[3].Value = "Hoàn Thành";
                 }
@@ -269,7 +270,7 @@ namespace AutoTDSYouTube
                     break;
             }
         }
-        private async Task WorkCommentTikTok()
+        private void WorkCommentTikTok()
         {
 
             try
