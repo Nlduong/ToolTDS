@@ -41,6 +41,7 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.chkSubYT = new System.Windows.Forms.CheckBox();
             this.chkCommentYT = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,7 +69,7 @@
             // lblWaitingTime
             // 
             this.lblWaitingTime.AutoSize = true;
-            this.lblWaitingTime.Location = new System.Drawing.Point(854, 127);
+            this.lblWaitingTime.Location = new System.Drawing.Point(540, 9);
             this.lblWaitingTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblWaitingTime.Name = "lblWaitingTime";
             this.lblWaitingTime.Size = new System.Drawing.Size(97, 16);
@@ -78,7 +79,7 @@
             // lblXu
             // 
             this.lblXu.AutoSize = true;
-            this.lblXu.Location = new System.Drawing.Point(854, 161);
+            this.lblXu.Location = new System.Drawing.Point(708, 49);
             this.lblXu.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblXu.Name = "lblXu";
             this.lblXu.Size = new System.Drawing.Size(14, 16);
@@ -87,11 +88,11 @@
             // 
             // txtMaxJob
             // 
-            this.txtMaxJob.Location = new System.Drawing.Point(601, 9);
+            this.txtMaxJob.Location = new System.Drawing.Point(853, 118);
             this.txtMaxJob.Name = "txtMaxJob";
             this.txtMaxJob.Size = new System.Drawing.Size(100, 22);
             this.txtMaxJob.TabIndex = 8;
-            this.txtMaxJob.Text = "100";
+            this.txtMaxJob.Text = "10";
             // 
             // dataGridView1
             // 
@@ -178,11 +179,22 @@
             this.chkCommentYT.Text = "CommentYoutube";
             this.chkCommentYT.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(762, 121);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 16);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Số lần chạy";
+            // 
             // Youtube
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(969, 450);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.chkCommentYT);
             this.Controls.Add(this.chkSubYT);
             this.Controls.Add(this.btnStop);
@@ -216,6 +228,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.CheckBox chkSubYT;
         private System.Windows.Forms.CheckBox chkCommentYT;
+        private System.Windows.Forms.Label label1;
     }
 }
 

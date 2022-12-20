@@ -66,87 +66,95 @@ namespace AutoTDSYouTube
         {
             var i = 0;
             delay(1);
-            foreach (Account account in listAccount)
+            for(int k=0 ; k < int.Parse(txtMaxJob.Text); k++)
             {
-                ChromeOptions chromeOptions = new ChromeOptions();
-                ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
-                chromeDriverService.HideCommandPromptWindow = true;
-                if (!Directory.Exists(ProfileFolderPath))
+                foreach (Account account in listAccount)
                 {
-                    Directory.CreateDirectory(ProfileFolderPath);
-                }
-
-                if (Directory.Exists(ProfileFolderPath))
-                {
-                    string nameProfile = account.idtds;
-
-                    chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
-                }
-                //chromeOptions2.AddArguments("profile-directory=" + UID);
-                chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=400,850", "--disable-gpu");
-                chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
-                driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
-                //driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromSeconds(30.0));
-                //driver.Navigate().GoToUrl("https://accounts.google.com/ServiceLogin/signinchooser?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&ifkv=ARgdvAtbsFtyS9LIFGa8UA8vf9lcW6Dzgi01LlhKYhrArQri81_FA3S8LwVqUFUmMpLwDteQP4SXbw&flowName=GlifWebSignIn&flowEntry=ServiceLogin");
-                //IWebElement query = driver.FindElement(By.CssSelector("input[type='email']"));
-                //Thread.Sleep(5000);
-                //query.SendKeys(account.idgg);
-                //query = driver.FindElement(By.CssSelector("div#identifierNext"));
-                //Thread.Sleep(5000);
-                //query.Click();
-                //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
-                //query = driver.FindElement(By.CssSelector("input[name='Passwd']"));
-                //query.SendKeys(account.passgg);
-                //Thread.Sleep(5000);
-                //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-                //Thread.Sleep(500);
-
-                //query = driver.FindElement(By.XPath(".//*[@id='passwordNext']"));
-                //query.Click();
-                //String oldTab = driver.CurrentWindowHandle.ToString();
-                //Thread.Sleep(5000);
-
-                //IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                //js.ExecuteScript("window.open('_blank', 'tab2');");
-                //driver.SwitchTo().Window("tab2");
-                driver.Navigate().GoToUrl("https://traodoisub.com/");
-                IWebElement query = driver.FindElement(By.XPath("//*[@id=\'username\']"));
-                query.SendKeys(account.idtds);
-                Thread.Sleep(2000);
-                query = driver.FindElement(By.XPath("//*[@id=\'password\']"));
-                query.SendKeys(account.passtds);
-                Thread.Sleep(2000);
-                query = driver.FindElement(By.XPath("//*[@id=\"loginclick\"]"));
-                query.Click();
-                Thread.Sleep(5000);
-                Task t = new Task(async () =>
-                {
-                    while (!isStop)
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
+                    chromeDriverService.HideCommandPromptWindow = true;
+                    if (!Directory.Exists(ProfileFolderPath))
                     {
-                        if (chkSubYT.Checked)
-                        {
-                            await WorkSubscribeYoutube();
-                        }
-                        delay(10);
-                        if (chkCommentYT.Checked)
-                        {
-                            await WorkCommentYoutube();
-                        }
+                        Directory.CreateDirectory(ProfileFolderPath);
+                    }
 
-                        //await WorkFollowTiktok(device);
-                        if (isStop)
-                            break;
+                    if (Directory.Exists(ProfileFolderPath))
+                    {
+                        string nameProfile = account.idtds;
 
-                        // await WorkTimTiktok(device);
+                        chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
+                    }
+                    //chromeOptions2.AddArguments("profile-directory=" + UID);
+                    chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=400,850", "--disable-gpu");
+                    chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
+                    driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
+                    //driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromSeconds(30.0));
+                    //driver.Navigate().GoToUrl("https://accounts.google.com/ServiceLogin/signinchooser?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&ifkv=ARgdvAtbsFtyS9LIFGa8UA8vf9lcW6Dzgi01LlhKYhrArQri81_FA3S8LwVqUFUmMpLwDteQP4SXbw&flowName=GlifWebSignIn&flowEntry=ServiceLogin");
+                    //IWebElement query = driver.FindElement(By.CssSelector("input[type='email']"));
+                    //Thread.Sleep(5000);
+                    //query.SendKeys(account.idgg);
+                    //query = driver.FindElement(By.CssSelector("div#identifierNext"));
+                    //Thread.Sleep(5000);
+                    //query.Click();
+                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                    //query = driver.FindElement(By.CssSelector("input[name='Passwd']"));
+                    //query.SendKeys(account.passgg);
+                    //Thread.Sleep(5000);
+                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+                    //Thread.Sleep(500);
 
-                        delay(30);
-                    }                  
-                });
-                delay(1);
-                t.Start();
+                    //query = driver.FindElement(By.XPath(".//*[@id='passwordNext']"));
+                    //query.Click();
+                    //String oldTab = driver.CurrentWindowHandle.ToString();
+                    //Thread.Sleep(5000);
+
+                    //IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                    //js.ExecuteScript("window.open('_blank', 'tab2');");
+                    //driver.SwitchTo().Window("tab2");
+                    driver.Navigate().GoToUrl("https://traodoisub.com/");
+                    IWebElement query = driver.FindElement(By.XPath("//*[@id=\'username\']"));
+                    query.SendKeys(account.idtds);
+                    Thread.Sleep(2000);
+                    query = driver.FindElement(By.XPath("//*[@id=\'password\']"));
+                    query.SendKeys(account.passtds);
+                    Thread.Sleep(2000);
+                    query = driver.FindElement(By.XPath("//*[@id=\"loginclick\"]"));
+                    query.Click();
+                    Thread.Sleep(5000);
+                    //Task t = new Task(async () =>
+                    //{
+                    //while (!isStop)
+                    //{
+                    if (chkSubYT.Checked)
+                    {
+                        WorkSubscribeYoutube();
+                    }
+                    delay(10);
+                    if (chkCommentYT.Checked)
+                    {
+                        WorkCommentYoutube();
+                    }
+
+                    //await WorkFollowTiktok(device);
+                    if (isStop)
+                        driver.Close();
+                    //break;
+
+                    // await WorkTimTiktok(device);
+
+                    delay(30);
+                    driver.Close();
+                    //}                  
+                    //});
+                    //delay(1);
+                    //t.Start();
+
+                }
+
+
+
+
             }
-
-         
 
         }
         private async Task WorkSubscribeYoutube()
