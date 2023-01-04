@@ -64,6 +64,8 @@ namespace AutoTDSvsTTC
             public string idtds { get; set; }
             public string passtds { get; set; }
             public string tokentds { get; set; }
+            public int totalJob { get; set; }
+            public int totalFailJob { get; set; }
         }
         public class ListCommnentTiktok
         {
@@ -84,6 +86,23 @@ namespace AutoTDSvsTTC
             public string job_success { get; set; }
             public int xu_them { get; set; }
             public string msg { get; set; }
+        }
+
+        public class TimTiktok
+        {
+            public string id { get; set; }
+            public string link { get; set; }
+            public string type { get; set; }
+        }
+        public class ListTimTiktok
+        {
+            public string error { get; set; }
+            public string cache { get; set; }
+            public List<TimTiktok> data { get; set; }
+        }
+        public class CacheTiktok
+        {           
+            public int cache { get; set; }
         }
     }
     
