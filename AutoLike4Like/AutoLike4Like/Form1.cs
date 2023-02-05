@@ -151,6 +151,7 @@ namespace AutoLike4Like
                             driver.SwitchTo().Window(tabclose[i]);
                             driver.Close();
                         }
+                        cell.Value = "Bắt đầu";
                     }));
                     thread.Name = dataGridViewControl.Rows[e.RowIndex].Cells[1].Value.ToString();
                     thread.Start();
@@ -247,7 +248,8 @@ namespace AutoLike4Like
                         {
                             driver.SwitchTo().Window(tabclose[i]);
                             driver.Close();
-                        }
+                        } 
+                        dataGrid.Rows[e.RowIndex].Cells[7].Value = "Hết nhiệm vụ dừng";
                     }));
                     thread.Name = dataGrid.Rows[e.RowIndex].Cells[1].Value.ToString();
                     thread.Start();
@@ -600,12 +602,12 @@ namespace AutoLike4Like
                             {
                                 int indexcoment = rnd.Next(0, allconment.Count);
                                 nd = allconment[indexcoment].FindElement(By.ClassName("comment-text")).Text;
-                                while (checkEmoji(nd))
-                                {
-                                    indexcoment = rnd.Next(0, allconment.Count);
-                                    nd = allconment[indexcoment].FindElement(By.ClassName("comment-text")).Text;
-                                    break;
-                                }
+                                //while (checkEmoji(nd))
+                                //{
+                                //    indexcoment = rnd.Next(0, allconment.Count);
+                                //    nd = allconment[indexcoment].FindElement(By.ClassName("comment-text")).Text;
+                                //    break;
+                                //}
                             }
                             stri = nd;
                             demnguoc(5, index, "Click ô commmnet - "+ nd);
@@ -613,8 +615,11 @@ namespace AutoLike4Like
                             b[0].Click();
                             demnguoc(5, index, "Nhập comment");
                             var c = driver.FindElement(By.XPath("//*[@id='app']/panel-container/ytm-engagement-panel/ytm-engagement-panel-section-list-renderer/div/div/div[2]/ytm-section-list-renderer/lazy-list/ytm-item-section-renderer/ytm-comments-header-renderer/ytm-comment-simplebox-renderer/div/textarea"));
-                            c.SendKeys(nd);
-
+                           
+                            PopulateElementJs(driver, c, nd);
+                            c.SendKeys(OpenQA.Selenium.Keys.Enter);
+                            Thread.Sleep(1000);
+                            c.SendKeys(OpenQA.Selenium.Keys.Backspace);
                             demnguoc(5, index, "Send commmnet");
                             var commment = driver.FindElement(By.XPath("//*[@id='app']/panel-container/ytm-engagement-panel/ytm-engagement-panel-section-list-renderer/div/div/div[2]/ytm-section-list-renderer/lazy-list/ytm-item-section-renderer/ytm-comments-header-renderer/ytm-comment-simplebox-renderer/div/div/ytm-button-renderer[2]/button/yt-touch-feedback-shape/div/div[2]"));
                             commment.Click();
@@ -676,6 +681,7 @@ namespace AutoLike4Like
 
             return Task.CompletedTask;
         }
+       
         private Task ViewYoutube(int index, IWebDriver driver)
         {
 
@@ -1527,7 +1533,11 @@ namespace AutoLike4Like
                 }
             }
         }
-       
+        public static void PopulateElementJs(IWebDriver driver, IWebElement element, string text)
+        {
+            var script = "arguments[0].value=' " + text + " ';";
+            ((IJavaScriptExecutor)driver).ExecuteScript(script, element);
+        }
         private void test()
         {
             var driverService = ChromeDriverService.CreateDefaultService();

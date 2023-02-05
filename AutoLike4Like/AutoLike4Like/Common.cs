@@ -11,7 +11,7 @@ namespace AutoLike4Like
 {
     public static class Common
     {
-        public static string ProfileFolderPath = @"D:\ToolAuto\AutoLike4Like\AutoLike4Like\bin\Debug\Profile";
+        public static string ProfileFolderPath = @"D:\ToolAuto\ToolTDS\AutoLike4Like\AutoLike4Like\bin\Debug\Profile";
         public static string ExtentionFolderPath = "Extention";
         public static int  MinCredit = 2;
         public static bool checkEmoji(string input)
