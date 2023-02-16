@@ -311,26 +311,26 @@ namespace AutoLike4Like
         }
         private void M_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            //ChromeOptions chromeOptions = new ChromeOptions();
-            //ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
-            //chromeDriverService.HideCommandPromptWindow = true;
-            //if (!Directory.Exists(ProfileFolderPath))
-            //{
-            //    Directory.CreateDirectory(ProfileFolderPath);
-            //}
+            ChromeOptions chromeOptions = new ChromeOptions();
+            ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
+            chromeDriverService.HideCommandPromptWindow = true;
+            if (!Directory.Exists(ProfileFolderPath))
+            {
+                Directory.CreateDirectory(ProfileFolderPath);
+            }
 
-            //if (Directory.Exists(ProfileFolderPath))
-            //{
-            //    string nameProfile = dataGrid.Rows[RowIndexTDSGrid].Cells[1].Value.ToString();
+            if (Directory.Exists(ProfileFolderPath))
+            {
+                string nameProfile = dataGrid.Rows[RowIndexTDSGrid].Cells[1].Value.ToString();
 
-            //    chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
-            //}
-            ////chromeOptions2.AddArguments("profile-directory=" + UID);
-            ////chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
-            //chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=800,850", "--disable-gpu");
-            ////chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
-            //IWebDriver driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
-            //driver.Navigate().GoToUrl("https://www.youtube.com/");
+                chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
+            }
+            //chromeOptions2.AddArguments("profile-directory=" + UID);
+            //chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
+            chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=800,850", "--disable-gpu");
+            //chromeOptions.EnableMobileEmulation("iPhone 12 Pro");
+            IWebDriver driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
+            driver.Navigate().GoToUrl("https://www.youtube.com/");
         }
         #region Youtube
         private Task LikeYoutube(int index, IWebDriver driver)
@@ -710,18 +710,18 @@ namespace AutoLike4Like
         {
 
             try
-            {             
+            {              
                 for (int i = 0; i < 50; i++)
                 {
-                    if (i % 2 == 0)
+                    var query = driver.FindElements(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[1]/div/div[3]/div/div/a"));
+                    if(query.Count > 0)
                     {
-                       var  query = driver.FindElement(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[1]/div/div[3]/div/div/a"));
-                        query.Click();
+                        query[0].Click();
                     }
-                    else
-                    {
-                       var query = driver.FindElement(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[2]/div/div[3]/div/div/a"));
-                        query.Click();
+                    else { 
+                   
+                       query = driver.FindElements(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[2]/div/div[3]/div/div/a"));
+                        query[0].Click();
                     }                   
                     demnguocView(3, index, "Click nhiệm vụ");
                     var tabs = driver.WindowHandles;
@@ -794,7 +794,8 @@ namespace AutoLike4Like
             }
             catch (Exception ex)
             {
-                this.ViewYoutube(index, driver);
+               MessageBox.Show(ex.Message);
+               // this.ViewYoutube(index+1, driver);
             }
 
             return Task.CompletedTask;
@@ -844,12 +845,35 @@ namespace AutoLike4Like
                     int time = 0;
                     while (!checkClick && time < 4)
                     {
+                        var like1 = driver.FindElements(By.XPath("/html/body/div[2]/div/div[2]/div[6]/div[1]/div/button/span[1]"));
+                        if (like1.Count > 0)
+                        {  
+                            var script1 = "arguments[0].click();";
+                            ((IJavaScriptExecutor)driver).ExecuteScript(script1, like1[0]);
+
+                            checkClick = true;
+                            listAccount[index].totalJob = listAccount[index].totalJob + 1;
+                            i++;
+                            break;
+                        }
+                        like1 = driver.FindElements(By.XPath("/html/body/div[2]/div/div[2]/div[6]/div[5]/div[1]/div/button/span[1]"));
+                        if (like1.Count > 0)
+                        {
+                            var script1 = "arguments[0].click();";
+                            ((IJavaScriptExecutor)driver).ExecuteScript(script1, like1[0]);
+
+                            checkClick = true;
+                            listAccount[index].totalJob = listAccount[index].totalJob + 1;
+                            break;
+                            i++;
+                        }
 
                         var likebtn = driver.FindElements(By.XPath("//*[@id=\"screen-root\"]/div/div[2]/div[4]/div[4]"));
                         var whatbtn = driver.FindElements(By.XPath("//*[@id=\"screen-root\"]/div/div[2]/div[4]/div[1]/div/div/div[2]"));
 
-                        if (likebtn.Count > 0 && (whatbtn[0].Text == "WhatsApp" || whatbtn[0].Text == "Learn More"))
+                        if (checkClick == false && likebtn.Count > 0 && (whatbtn[0].Text == "WhatsApp" || whatbtn[0].Text == "Learn More" || whatbtn[0].Text ==  "Call Now"))
                         {
+                            
                             likebtn = driver.FindElements(By.XPath("//*[@id=\"screen-root\"]/div/div[2]/div[4]/div[3]"));
                             likebtn[0].Click();
                             checkClick = true;
