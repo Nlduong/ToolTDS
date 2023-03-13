@@ -125,7 +125,7 @@ namespace AutoLike4Like
                         demnguocView(3, e.RowIndex, "Đăng Nhập");
                         //if (chkLikeTiktok.Checked)
                         //{
-                        //    dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "View Youtube";
+                        //    dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "View Facebook";
                         //    await ViewFacebook(e.RowIndex, driver);
                         //}
                         if (chkLikeTiktok.Checked)
@@ -150,11 +150,11 @@ namespace AutoLike4Like
                             ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,500)");
                             await ViewYoutube(e.RowIndex, driver);
                         }
-                        if (chkLikeTiktok.Checked)
-                        {
-                            dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Repost Tiktok";
-                            await RepostSoundCloud(e.RowIndex, driver);
-                        }
+                        //if (chkLikeTiktok.Checked)
+                        //{
+                        //    dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Repost Tiktok";
+                        //    await RepostSoundCloud(e.RowIndex, driver);
+                        //}
                         //if (chkLikeTiktok.Checked)
                         //{
                         //    dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Like Tiktok";
@@ -162,14 +162,15 @@ namespace AutoLike4Like
                         //}
                         if (chkLikeTiktok.Checked)
                         {
-                            dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Follow Tiktok";
-                            await FollowTikTok(e.RowIndex, driver);
-                        }
-                        if (chkLikeTiktok.Checked)
-                        {
                             dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Like Tiktok";
                             await LikeTikTok(e.RowIndex, driver);
                         }
+                        if (chkFollowTiktok.Checked)
+                        {
+                            dataGridViewControl.Rows[e.RowIndex].Cells[3].Value = "Follow Tiktok";
+                            await FollowTikTok(e.RowIndex, driver);
+                        }
+                       
 
                         var tabclose = driver.WindowHandles;
                         for (int i = 0; i < tabclose.Count; i++)
@@ -385,7 +386,7 @@ namespace AutoLike4Like
                     while (!checkClick && time < 4)
                     {
 
-                        var likebtn = driver.FindElements(By.XPath("//*[@id=\"app\"]/div[1]/ytm-watch/ytm-single-column-watch-next-results-renderer/div/ytm-slim-video-metadata-section-renderer/ytm-slim-video-action-bar-renderer/div/ytm-segmented-like-dislike-button-renderer/div/toggle-button-with-animated-icon/ytm-toggle-button-renderer/button/yt-touch-feedback-shape/div/div[2]"));
+                        var likebtn = driver.FindElements(By.XPath("/html/body/ytm-app/div[1]/ytm-watch/div[2]/ytm-single-column-watch-next-results-renderer/div/ytm-slim-video-metadata-section-renderer/ytm-slim-video-action-bar-renderer/div/ytm-segmented-like-dislike-button-renderer/div/toggle-button-with-animated-icon/ytm-toggle-button-renderer/button/yt-touch-feedback-shape/div"));
 
                         if (likebtn.Count > 0)
                         {
@@ -615,7 +616,7 @@ namespace AutoLike4Like
                     {
 
                         demnguoc(5, index, "Click thẻ comment");
-                        var showCommentbtn = driver.FindElements(By.XPath("/html/body/ytm-app/div[1]/ytm-watch/ytm-single-column-watch-next-results-renderer/div/ytm-item-section-renderer/lazy-list/ytm-comments-entry-point-header-renderer/button/div"));
+                        var showCommentbtn = driver.FindElements(By.XPath("/html/body/ytm-app/div[1]/ytm-watch/div[2]/ytm-single-column-watch-next-results-renderer/div/ytm-item-section-renderer/lazy-list/ytm-comments-entry-point-header-renderer/button"));
                         if (showCommentbtn.Count > 0)
                         {
                             showCommentbtn[0].Click();
@@ -716,12 +717,16 @@ namespace AutoLike4Like
                     var query = driver.FindElements(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[1]/div/div[3]/div/div/a"));
                     if(query.Count > 0)
                     {
-                        query[0].Click();
+                        //query[0].Click();
+                        var script1 = "arguments[0].click();";
+                        ((IJavaScriptExecutor)driver).ExecuteScript(script1, query[0]);
                     }
                     else { 
                    
                        query = driver.FindElements(By.XPath("/html/body/div[9]/div/div[1]/div[2]/div[2]/div/div[1]/div[2]/div[2]/div/div[3]/div/div/a"));
-                        query[0].Click();
+                        var script1 = "arguments[0].click();";
+                        ((IJavaScriptExecutor)driver).ExecuteScript(script1, query[0]);
+                        //query[0].Click();
                     }                   
                     demnguocView(3, index, "Click nhiệm vụ");
                     var tabs = driver.WindowHandles;
@@ -736,7 +741,7 @@ namespace AutoLike4Like
                     driver.SwitchTo().Window(tabs[0]);
                     demnguocView(3, index, "Chuyển tab chính");
                     ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,900)");
-                    demnguocView(4, index, "Chờ scoll page");
+                    demnguocView(7, index, "Chờ scoll page");
                     this.dataGridViewControl[7, index].Value = (object)"Đang giải capcha";
                     var pointClick =checkToaDo(driver, index);
 
@@ -1156,6 +1161,7 @@ namespace AutoLike4Like
                     var a = driver.FindElements(By.XPath("//*[@id=\"result\"]/div/a"));
                     if (a.Count > 0)
                     {
+                        listAccount[index].totalJob = listAccount[index].totalJob + 1;
                         demnguocView(3, index, "Click nhận credit");
                         if (pointClick.X < 225 & pointClick.X > 132)
                         {
@@ -1186,16 +1192,23 @@ namespace AutoLike4Like
                             a[6].Click();
                         }
                     }
-
-
+                    else
+                    {
+                        Random rand = new Random();
+                        int indexclick = rand.Next(0, 6);
+                        a[indexclick].Click();
+                    }
+                    driver.SwitchTo().DefaultContent();
                     var xuthem = "";
-
-                    // query.Click();
+                    //*[@id="top-header-credits-credits-total"]
+                    demnguocView(3, index, "Load credit");
 
                     var sxu = driver.FindElement(By.XPath("//*[@id=\"top-header-credits-credits-total\"]"));
                     dataGrid.Rows[index].Cells[4].Value = xuthem;
                     dataGrid.Rows[index].Cells[5].Value = sxu.Text;
                     dataGrid.Rows[index].Cells[6].Value = listAccount[index].totalJob;
+                    ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,-900)");
+                    demnguocView(2, index, "Chờ scoll page");
                     //*[@id="top-header-credits-credits-total"]
                     demnguocView(3, index, "Chuyển nhiệm vụ");
                 }
@@ -1254,14 +1267,15 @@ namespace AutoLike4Like
                     demnguocView(3, index, "Click nhiệm vụ");
                     var tabs = driver.WindowHandles;
                     driver.SwitchTo().Window(tabs[1]);
-                    demnguocView(15, index, "Chuyển tab Tik Tok");
+                    Random rnd = new Random();
+                    int indexcoment = rnd.Next(15, 30);
+                    demnguocView(indexcoment, index, "Chuyển tab Tik Tok");
 
                     bool checkClick = false;
                     int time = 0;
                     while (!checkClick && time < 4)
                     {
-
-                        var likebtn = driver.FindElements(By.XPath("/html/body/div[2]/div[3]/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[4]/button[1]/span"));
+                        var likebtn = driver.FindElements(By.XPath("/html/body/div[2]/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[4]/button/span"));
                         if (likebtn.Count > 0)
                         {
                             likebtn[0].Click();
@@ -1276,7 +1290,6 @@ namespace AutoLike4Like
                         }
 
                         time = time + 1;
-
                     }
                     demnguocView(3, index, "Chuẩn bị chuyển về tab chính");
                     driver.Close();
@@ -1663,6 +1676,13 @@ namespace AutoLike4Like
             {
                 while (time > 0)
                 {
+                    if (!this.threadDictionary.ContainsKey(this.dataGrid[1, rowIndex].Value.ToString()))
+                    {
+                        this.dataGrid.Invoke(new Action(() =>
+                        {
+                            this.dataGrid[7, rowIndex].Value = (object)"Đã dừng";
+                        }));
+                    }
                     this.dataGrid.Invoke(new Action(() =>
                     {
                         this.dataGrid.Rows[rowIndex].Cells[7].Value = string.Format("{0} - {1} {2} s...", job, "Vui lòng chờ", time);
@@ -1670,17 +1690,11 @@ namespace AutoLike4Like
                     --time;
                     Thread.Sleep(1000);
                 }
-                if (!this.threadDictionary.ContainsKey(this.dataGrid[1, rowIndex].Value.ToString()))
-                {
-                    this.dataGrid.Invoke(new Action(() =>
-                    {
-                        this.dataGrid[7, rowIndex].Value = (object)"Đã dừng";
-                    }));
-                }
+               
             }
             catch (Exception ex)
             {
-                throw ex;
+                //throw ex;
             }
 
         }
@@ -1942,6 +1956,11 @@ namespace AutoLike4Like
             }          
             return pointClick; 
         }
-       
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            
+        }
+
     }
 }
