@@ -146,15 +146,9 @@ namespace EverveToolAuto
                         dataGrid.Rows[rowIndex].Cells[3].Value = "View Youtube";
                         dataGrid.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGrid.Rows[rowIndex].Cells[6].Value = listAccount[rowIndex].totalJob;
-                        var query1 = querys[i].FindElements(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
-                        if (query1.Count > 0)
-                        {
-                            query1[0].Click();
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        IWebElement SplitCaseYes = driver.FindElement(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
+                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                        executor.ExecuteScript("arguments[0].click();", SplitCaseYes);
                         demnguoc(RamdomTime(3, 7), rowIndex, "change tab");
                         var tabhandel = driver.WindowHandles;
                         driver.SwitchTo().Window(tabhandel[1]);
@@ -254,15 +248,10 @@ namespace EverveToolAuto
                         dataGrid.Rows[rowIndex].Cells[3].Value = "Like Youtube";
                         dataGrid.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGrid.Rows[rowIndex].Cells[6].Value = listAccount[rowIndex].totalJob;
-                        var query1 = querys[i].FindElements(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
-                        if(query1.Count>0)
-                        {
-                            query1[0].Click();
-                        }
-                        else
-                        {
-                            break;
-                        }                         
+                        IWebElement SplitCaseYes = driver.FindElement(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
+                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                        executor.ExecuteScript("arguments[0].click();", SplitCaseYes);
+
                         demnguoc(RamdomTime(3, 7), rowIndex, "change tab");
                         var tabhandel = driver.WindowHandles;
                         driver.SwitchTo().Window(tabhandel[1]);
@@ -379,15 +368,18 @@ namespace EverveToolAuto
                              
                         demnguoc(2, rowIndex, "Click traffic");
                         //((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,200)");
-                        var query1 = querys[i].FindElements(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
-                        if (query1.Count > 0)
-                        {
-                            query1[0].Click();
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        //var query1 = querys[i].FindElements(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
+                        IWebElement SplitCaseYes = driver.FindElement(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
+                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                        executor.ExecuteScript("arguments[0].click();", SplitCaseYes);
+                        //if (query1.Count > 0)
+                        //{
+                        //    query1[0].Click();
+                        //}
+                        //else
+                        //{
+                        //    break;
+                        //}
                         demnguoc(RamdomTime(5, 8), rowIndex, "Change tab traffic");
                         var tabhandel = driver.WindowHandles;
                         driver.SwitchTo().Window(tabhandel[1]);
@@ -479,6 +471,7 @@ namespace EverveToolAuto
             int ramNumber = rnd.Next(begin, end);
             return ramNumber;
         }
+
 
         private void dataGrid_MouseClick(object sender, MouseEventArgs e)
         {
