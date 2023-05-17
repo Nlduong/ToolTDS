@@ -656,7 +656,7 @@ namespace AutoAviso
                         }
                         driver.SwitchTo().Window(tabhandel[1]);
                         demnguoc(RamdomTime(10, 14), rowIndex, "Load Video");
-
+                        IWebDriver driver1 = driver;
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
                         driver.SwitchTo().Frame(0);
@@ -678,6 +678,23 @@ namespace AutoAviso
                         {
                             demnguoc(60, rowIndex, "Xem View Video");
                         }
+
+                        time = driver1.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+                      
+                        if(time.Count > 0)
+                        {
+                            second = int.Parse(time[0].Text);
+                            driver1.SwitchTo().Frame(0);
+
+                             playVideo = driver1.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                            if (playVideo.Count > 0)
+                            {
+                                playVideo[0].Click();
+                            }
+                            demnguoc(RamdomTime(2, 3), rowIndex, "Play Video");
+                            demnguoc(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
+                        }                       
+
                         demnguoc(7, rowIndex, "Đóng tab Video");
                         if (tabhandel.Count > 1)
                         {
