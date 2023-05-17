@@ -24,6 +24,7 @@ namespace AutoAviso
         string ExtentionFolderPath = @"D:\ToolAuto\ToolTDS\AutoAviso\AutoAviso\bin\Debug\Extention";
         private Dictionary<string, Thread> threadDictionary = new Dictionary<string, Thread>();
         private Dictionary<string, Thread> threadDictionarySEO = new Dictionary<string, Thread>();
+        IWebDriver driverSEO;
         List<Account> listAccount = new List<Account>();
         List<Account> listAccountSEO = new List<Account>();
         public Form1()
@@ -38,7 +39,7 @@ namespace AutoAviso
 
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("#", typeof(int));
-            dataTable.Columns.Add("ID Google", typeof(string));          
+            dataTable.Columns.Add("ID Google", typeof(string));
             dataTable.Columns.Add("Job đang làm", typeof(string));
             dataTable.Columns.Add("Credits Thêm", typeof(string));
             dataTable.Columns.Add("Tổng Credits", typeof(string));
@@ -95,12 +96,182 @@ namespace AutoAviso
             };
             this.dataGridSEO.Columns.Add(buttonColumn);
             this.dataGridSEO.Columns[6].Width = 300;
-        }     
+        }
         private Task viewYoutubeSEO(int rowIndex, IWebDriver driver)
         {
+            var checkRuvideos = false;
             var querys = driver.FindElements(By.XPath("//*[@id=\"echoall\"]/table/tbody/tr"));
             var xu = driver.FindElements(By.XPath("//*[@id=\"ajax_load\"]/div/div[3]/span"));
             int maxJob = RamdomTime(40, 55);
+            int indexClick = 0;
+            int currentJob = 0;
+
+
+            var ramdoclick = RamdomTime(7, 9);
+
+
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,800)");
+            try
+            {
+                if (querys.Count > 0)
+                {
+                    for (int i = 1; i < querys.Count; i++)
+                    {
+                        dataGridSEO.Rows[rowIndex].Cells[3].Value = "View Youtube";
+                        dataGridSEO.Rows[rowIndex].Cells[5].Value = xu[0].Text;
+                        dataGridSEO.Rows[rowIndex].Cells[6].Value = listAccountSEO[rowIndex].totalJob;
+                        var style = querys[i].GetAttribute("style");
+                        if (style.IndexOf("display:") > -1)
+                        {
+                            continue;
+                        }
+
+                        var linkClick = querys[i].FindElements(By.TagName("a"));
+                        if (linkClick.Count > 2)
+                        {
+                            var tabhandel = driver.WindowHandles;
+
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", linkClick[2]);
+                        }
+                        indexClick = indexClick + 1;
+                        if (i == (querys.Count - 4))
+                        {
+                            ramdoclick = indexClick;
+                        }
+                        driverSEO = driver;
+                        if (checkRuvideos == true)
+                        {
+                            break;
+                        }
+                        if (indexClick == ramdoclick)
+                        {
+                            demnguocSEO(RamdomTime(15, 20), rowIndex, "Load Video");
+                            var tabhandel = driver.WindowHandles;
+
+                            var timeLarge = 0;
+
+                            for (int j = 1; j < tabhandel.Count; j++)
+                            {
+                                driver.SwitchTo().Window(tabhandel[j]);
+
+                                var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+                                int second = int.Parse(time[0].Text);
+                                if (second > timeLarge)
+                                {
+                                    timeLarge = second;
+                                }
+                                driver.SwitchTo().Frame(0);
+
+
+                                var unavailable = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span"));
+                                var privateVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span/span"));
+                                //*[@id="movie_player"]/div[15]/div[1]/div[2]/div[1]/span
+                                if (unavailable.Count > 0 || privateVideo.Count > 0)
+                                {
+                                    //if (unavailable[0].Text == "Video unavailable" || privateVideo[0].Text =="This video is age-restricted and only available on YouTube. ")
+                                    //{
+                                    //if (tabhandel.Count > 1)
+                                    //{
+                                    //    driver.SwitchTo().Window(tabhandel[j]);
+                                    //    driver.Close();
+                                    //}
+                                    continue;
+                                    //}
+                                }
+
+                                var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                                if (playVideo.Count > 0)
+                                {
+                                    playVideo[0].Click();
+                                    listAccountSEO[rowIndex].totalJob = listAccountSEO[rowIndex].totalJob + 1;
+                                }
+                                var playRuVideo = driver.FindElements(By.XPath("//*[@id=\"app\"]/div/div/div[4]/div[2]/div[1]/div[2]/button"));
+                                if (playRuVideo.Count > 0)
+                                {
+                                    checkRuvideos = true;
+                                    playRuVideo[0].Click();
+                                    listAccountSEO[rowIndex].totalJob = listAccountSEO[rowIndex].totalJob + 1;
+                                }
+                                demnguocSEO(RamdomTime(2, 3), rowIndex, "Play Video");
+                            }
+
+
+                            if (timeLarge > 0)
+                            {
+                                demnguocSEO(RamdomTime(timeLarge + 1, timeLarge + 3), rowIndex, "Xem View Video");
+                            }
+                            else
+                            {
+                                demnguocSEO(60, rowIndex, "Xem View Video");
+                            }
+                            for (int j = 1; j < tabhandel.Count; j++)
+                            {
+                                demnguocSEO(3, rowIndex, "Đóng tab Video");
+                                if (tabhandel.Count > 1)
+                                {
+                                    driver.SwitchTo().Window(tabhandel[j]);
+                                    var title = driver.Title.ToString();
+                                    int myInt;
+                                    var Result = int.TryParse(title, out myInt);
+                                    if (!Result)
+                                    {
+                                        driver.Close();
+                                    }
+                                    else
+                                    {
+                                        demnguocSEO(RamdomTime(myInt + 1, myInt + 3), rowIndex, "Xem View Video");
+                                        driver.Close();
+                                    }
+                                }
+                            }
+                            if (tabhandel.Count == 1)
+                            {
+                                continue;
+                            }
+                            demnguocSEO(1, rowIndex, "Chuyển về tab chính");
+                            driver.SwitchTo().Window(tabhandel[0]);
+                            demnguocSEO(5, rowIndex, "Nhận tiền");
+
+                            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,500)");
+                            currentJob = currentJob + 1;
+                            //if ((currentJob % 5) == 0)
+                            //{
+
+                            //}
+                            //if (currentJob == maxJob)
+                            //{
+                            //    demnguocSEO(8, rowIndex, "Đã đủ job hôm nay" + maxJob + ".");
+                            //    break;
+                            //}
+                            demnguocSEO(8, rowIndex, "Chuyển nv kế tiếp");
+                            indexClick = 0;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                demnguocSEO(8, rowIndex, ex.Message);
+                strError = strError + ";" + ex.Message;
+                System.IO.File.WriteAllText("error.json", strError);
+                //var tabclose = driver.WindowHandles;
+                //for (int i = 0; i < tabclose.Count; i++)
+                //{
+                //    driver.SwitchTo().Window(tabclose[i]);
+                //    driver.Close();
+                //}
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task viewRutubeSEO(int rowIndex, IWebDriver driver)
+        {
+            var querys = driver.FindElements(By.XPath("//*[@id=\"echoall\"]/table/tbody/tr"));
+            var xu = driver.FindElements(By.XPath("//*[@id=\"ajax_load\"]/div/div[3]/span"));
+
             int currentJob = 0;
             try
             {
@@ -111,11 +282,11 @@ namespace AutoAviso
                         dataGridSEO.Rows[rowIndex].Cells[3].Value = "View Youtube";
                         dataGridSEO.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGridSEO.Rows[rowIndex].Cells[6].Value = listAccountSEO[rowIndex].totalJob;
-                       var style = querys[i].GetAttribute("style");
-                        if (style.IndexOf("display:")> -1)
+                        var style = querys[i].GetAttribute("style");
+                        if (style.IndexOf("display:") > -1)
                         {
                             continue;
-                        }                     
+                        }
 
                         var linkClick = querys[i].FindElements(By.TagName("a"));
                         if (linkClick.Count > 2)
@@ -124,14 +295,14 @@ namespace AutoAviso
                             executor.ExecuteScript("arguments[0].click();", linkClick[2]);
                             demnguocSEO(RamdomTime(6, 7), rowIndex, "Change tab");
                         }
-                     
+
                         var tabhandel = driver.WindowHandles;
-                        if(tabhandel.Count ==1)
+                        if (tabhandel.Count == 1)
                         {
                             continue;
                         }
                         driver.SwitchTo().Window(tabhandel[1]);
-                        demnguocSEO(RamdomTime(10,14), rowIndex, "Load Video");
+                        demnguocSEO(RamdomTime(10, 14), rowIndex, "Load Video");
 
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
@@ -153,12 +324,7 @@ namespace AutoAviso
                                 continue;
                             }
                         }
-                        
-                        var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
-                        if (playVideo.Count > 0)
-                        {                            
-                             playVideo[0].Click();                            
-                        }
+
                         var playRuVideo = driver.FindElements(By.XPath("//*[@id=\"app\"]/div/div/div[4]/div[2]/div[1]/div[2]/button"));
                         if (playRuVideo.Count > 0)
                         {
@@ -173,7 +339,7 @@ namespace AutoAviso
                         {
                             demnguocSEO(60, rowIndex, "Xem View Video");
                         }
-                        
+
 
                         demnguocSEO(7, rowIndex, "Đóng tab Video");
                         if (tabhandel.Count > 1)
@@ -191,13 +357,7 @@ namespace AutoAviso
                         {
                             ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,400)");
                         }
-                       
-                        if (currentJob == maxJob)
-                        {
-                            demnguocSEO(8, rowIndex, "Đã đủ job hôm nay" + maxJob +".");
-                            break;
-                        }
-                        demnguocSEO(8, rowIndex, "Chuyển nv kế tiếp");    
+                        demnguocSEO(8, rowIndex, "Chuyển nv kế tiếp");
                     }
                 }
 
@@ -208,126 +368,119 @@ namespace AutoAviso
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
             }
-            var tabclose = driver.WindowHandles;
-            for (int i = 0; i < tabclose.Count; i++)
-            {
-                driver.SwitchTo().Window(tabclose[i]);
-                driver.Close();
-            }
             return Task.CompletedTask;
         }
-        private Task LikeYoutube(int rowIndex)
+        private Task LikeYoutube(int rowIndex, IWebDriver driver)
         {
-            demnguoc(5, rowIndex, "Mở Chorme selenium");
-            ChromeOptions chromeOptions = new ChromeOptions();
-            ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
-            chromeDriverService.HideCommandPromptWindow = true;
-            if (!Directory.Exists(ProfileFolderPath))
-            {
-                Directory.CreateDirectory(ProfileFolderPath);
-            }
+            var checkRuvideos = false;
+            var querys = driver.FindElements(By.XPath("//*[@id=\"echoall\"]/table/tbody/tr"));
+            var xu = driver.FindElements(By.XPath("//*[@id=\"ajax_load\"]/div/div[3]/span"));
+            int maxJob = RamdomTime(40, 55);
+            int indexClick = 0;
+            int currentJob = 0;
+            var ramdoclick = 1;
 
-            if (Directory.Exists(ProfileFolderPath))
-            {
-                string nameProfile = dataGridAviso.Rows[rowIndex].Cells[1].Value.ToString();
-
-                chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
-            }
-
-            chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
-            chromeOptions.EnableMobileEmulation("iPad Air");
-            IWebDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
-            driver.Navigate().GoToUrl("https://everve.net/tasks/youtube-likes/");
-
-
-            demnguoc(2, rowIndex, "Duyệt nhiệm vụ");
-            var querys = driver.FindElements(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr"));
-            int index1 = 1;
-            int index2 = 2;
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,800)");
             try
             {
                 if (querys.Count > 0)
                 {
-                    for (int i = 0; i < querys.Count; i++)
+                    for (int i = 1; i < querys.Count; i++)
                     {
-                        var xu = driver.FindElements(By.XPath("/html/body/header/div/div[1]/div[1]/div/button/span[2]/span"));
-                        dataGridAviso.Rows[rowIndex].Cells[3].Value = "Like Youtube";
-                        dataGridAviso.Rows[rowIndex].Cells[5].Value = xu[0].Text;
-                        dataGridAviso.Rows[rowIndex].Cells[6].Value = listAccount[rowIndex].totalJob;
-                        IWebElement SplitCaseYes = driver.FindElement(By.XPath("/html/body/main/div/div/div[1]/div[2]/table/tbody/tr[" + (i + 1) + "]/td[3]/div/a[1]"));
-                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
-                        executor.ExecuteScript("arguments[0].click();", SplitCaseYes);
-
-                        demnguoc(RamdomTime(3, 7), rowIndex, "change tab");
-                        var tabhandel = driver.WindowHandles;
-                        driver.SwitchTo().Window(tabhandel[1]);
-                        demnguoc(5, rowIndex, "Load Video");
-
-
-                        demnguoc(RamdomTime(60, 65), rowIndex, "Xem View Video");
-                        var unavalibVideo = driver.FindElements(By.XPath("/html/body/div/div/div[16]/div[1]/div[2]/div[1]"));
-                        if (unavalibVideo.Count == 0)
+                        dataGridSEO.Rows[rowIndex].Cells[3].Value = "Like Youtube";
+                        dataGridSEO.Rows[rowIndex].Cells[5].Value = xu[0].Text;
+                        dataGridSEO.Rows[rowIndex].Cells[6].Value = listAccountSEO[rowIndex].totalJob;
+                        var style = querys[i].GetAttribute("style");
+                        if (style.IndexOf("display:") > -1)
                         {
-                            querys = driver.FindElements(By.XPath("/html/body/ytm-app/div[1]/ytm-watch/div[2]/ytm-single-column-watch-next-results-renderer/div/ytm-slim-video-metadata-section-renderer/ytm-slim-video-action-bar-renderer/div/ytm-segmented-like-dislike-button-renderer/div/toggle-button-with-animated-icon/ytm-toggle-button-renderer/button/yt-touch-feedback-shape/div"));
-
-                            if (querys.Count > 0)
-                            {
-
-                                querys[0].Click();
-                            }
-                            else
-                            {
-                                querys = driver.FindElements(By.XPath("/html/body/ytm-app/div[1]/ytm-watch/div[2]/ytm-single-column-watch-next-results-renderer/ytm-slim-video-metadata-section-renderer/ytm-slim-video-action-bar-renderer/div/ytm-segmented-like-dislike-button-renderer/div/toggle-button-with-animated-icon/ytm-toggle-button-renderer/button/yt-touch-feedback-shape/div"));
-                                if (querys.Count > 0)
-                                {
-                                    querys[0].Click();
-                                }
-                            }
+                            continue;
                         }
-                        demnguoc(5, rowIndex, "Đóng tab Video");
+
+                        var linkClick = querys[i].FindElements(By.TagName("a"));
+                        if (linkClick.Count > 2)
+                        {
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", linkClick[1]);
+
+                        }
+                        demnguocSEO(RamdomTime(1, 2), rowIndex, "Tìm Link");
+                        var btnStart = querys[i].FindElements(By.ClassName("start_link_youtube"));
+
+                        if (btnStart.Count > 0)
+                        {
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", btnStart[0]);
+                            // demnguocSEO(RamdomTime(6, 7), rowIndex, "Change tab");
+                        }
+
+
+
+                        var tabhandel = driver.WindowHandles;
+                        if (tabhandel.Count == 1)
+                        {
+                            continue;
+                        }
+
+                        var timeLarge = 0;
+                        driver.SwitchTo().Window(tabhandel[1]);
+                        demnguocSEO(RamdomTime(15, 20), rowIndex, "Load Video");
+                       
+                        var btnLike = driver.FindElements(By.XPath("/html /body/ytd-app/div[1]/ytd-page-manager/ytd-watch-flexy/div[5]/div[1]/div/div[2]/ytd-watch-metadata/div/div[2]/div[2]/div/div/ytd-menu-renderer/div[1]/ytd-segmented-like-dislike-button-renderer/div[1]/ytd-toggle-button-renderer/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]"));
+                        if (btnLike.Count > 0)
+                        {
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", btnLike[0]);
+                        }
+
+                        demnguocSEO(3, rowIndex, "Đóng tab Video");
                         if (tabhandel.Count > 1)
                         {
                             driver.SwitchTo().Window(tabhandel[1]);
-                            driver.Close();
+                            var title = driver.Title.ToString();
+                            int myInt;
+                            var Result = int.TryParse(title, out myInt);
+                            if (!Result)
+                            {
+                                driver.Close();
+                            }
+                            else
+                            {
+                                demnguocSEO(RamdomTime(myInt + 1, myInt + 3), rowIndex, "Xem View Video");
+                                driver.Close();
+                            }
                         }
-                        demnguoc(1, rowIndex, "Chuyển về tab chính");
 
+                        if (tabhandel.Count == 1)
+                        {
+                            continue;
+                        }
+                        demnguocSEO(1, rowIndex, "Chuyển về tab chính");
                         driver.SwitchTo().Window(tabhandel[0]);
-                        demnguoc(5, rowIndex, "Nhận tiền");
+                        demnguocSEO(5, rowIndex, "Nhận tiền");
+                        var btnResult = querys[i].FindElements(By.ClassName("status_link_youtube"));
 
-                        var element = driver.FindElement(By.XPath("//*[@id=\"next_report_button\"]"));
+                        if (btnResult.Count > 0)
+                        {
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", btnResult[0]);
+                        }
+                            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,50)");
+                        currentJob = currentJob + 1;
+                        listAccountSEO[rowIndex].totalJob = listAccountSEO[rowIndex].totalJob + 1;
+                        demnguocSEO(8, rowIndex, "Chuyển nv kế tiếp");
 
-                        var strStyle = element.GetAttribute("style");
-                        if (strStyle.IndexOf("display") >= 0)
-                        {
-                            var success = driver.FindElements(By.XPath("/html/body/main/div/div/div[3]/div/div/div/div/div/div[2]/div/div[7]/button"));
-                            success[0].Click();
-                            listAccount[rowIndex].totalJob = listAccount[rowIndex].totalJob + 1;
-                        }
-                        else
-                        {
-                            var warmning = driver.FindElements(By.XPath("/html/body/main/div/div/div[3]/div/div/div/div/div/div[2]/div/div[6]/div/button[1]"));
-                            warmning[0].Click();
-                        }
-                        demnguoc(RamdomTime(8, 10), rowIndex, "Chuyển nv kế tiếp");
-                        index1 = index1 + 2;
-                        index2 = index2 + 2;
+
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                demnguoc(8, rowIndex, ex.Message);
+                demnguocSEO(8, rowIndex, ex.Message);
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
             }
-            var tabclose = driver.WindowHandles;
-            for (int i = 0; i < tabclose.Count; i++)
-            {
-                driver.SwitchTo().Window(tabclose[i]);
-                driver.Close();
-            }
+
             return Task.CompletedTask;
 
         }
@@ -371,7 +524,7 @@ namespace AutoAviso
                         dataGridAviso.Rows[rowIndex].Cells[3].Value = "Traffic Web";
                         dataGridAviso.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGridAviso.Rows[rowIndex].Cells[6].Value = listAccount[rowIndex].totalJob;
-                        var idTable = querys[i].GetAttribute("id");                      
+                        var idTable = querys[i].GetAttribute("id");
                         ///html/body/table/tbody/tr[3]/td[2]/div[4]/
                         ///html/body/table/tbody/tr[3]/td[2]/div[5]/table/tbody/tr/td[2]/div[1]/a
                         if (idTable == "serf-link-59867")
@@ -383,7 +536,7 @@ namespace AutoAviso
                         IWebElement link = driver.FindElement(By.XPath("/html/body/table/tbody/tr[3]/td[2]/div[" + index1 + "]/table/tbody/tr/td[2]/div[1]/a"));
                         IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
                         executor.ExecuteScript("arguments[0].click();", link);
-                      
+
                         demnguoc(RamdomTime(5, 7), rowIndex, "Click link");
                         var a = driver.FindElement(By.XPath("/html/body/table/tbody/tr[3]/td[2]/div[" + index1 + "]/table/tbody/tr/td[2]/div[1]/a"));
                         executor.ExecuteScript("arguments[0].click();", a);
@@ -395,24 +548,25 @@ namespace AutoAviso
 
                         demnguoc(RamdomTime(3, 4), rowIndex, "Check time");
                         var time1 = driver.FindElement(By.XPath("/html/body/table/tbody/tr/td[2]/span")).Text;
-                        if(time1 == time)
+                        if (time1 == time)
                         {
                             driver.Navigate().Refresh();
                             demnguoc(RamdomTime(3, 4), rowIndex, "Load page");
                         }
-                        
-                        demnguoc(RamdomTime(int.Parse(time), int.Parse(time)+5), rowIndex, "Change tab suffiz");  
-                       
-                        var  button = driver.FindElements(By.XPath("/html/body/table/tbody/tr/td[2]/a"));
+
+                        demnguoc(RamdomTime(int.Parse(time), int.Parse(time) + 5), rowIndex, "Change tab suffiz");
+
+                        var button = driver.FindElements(By.XPath("/html/body/table/tbody/tr/td[2]/a"));
                         if (button.Count() > 0)
                         {
                             executor.ExecuteScript("arguments[0].click();", button[0]);
+                            listAccount[rowIndex].totalJob = listAccount[rowIndex].totalJob + 1;
                         }
                         else
                         {
                             button = driver.FindElements(By.XPath("/html/body/table/tbody/tr/td[2]/a"));
                         }
-                        
+
 
                         demnguoc(5, rowIndex, "Đóng tab");
                         if (tabhandel.Count > 1)
@@ -424,7 +578,7 @@ namespace AutoAviso
 
                         driver.SwitchTo().Window(tabhandel[0]);
                         demnguoc(5, rowIndex, "Nhận tiền");
-                        
+
                         demnguoc(RamdomTime(10, 15), rowIndex, "Chuyển nv kế tiếp");
                         index1 = index1 + 1;
                     }
@@ -436,15 +590,127 @@ namespace AutoAviso
                 demnguoc(8, rowIndex, ex.Message);
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
+                var tabclose = driver.WindowHandles;
+                for (int i = 0; i < tabclose.Count; i++)
+                {
+                    driver.SwitchTo().Window(tabclose[i]);
+                    driver.Close();
+                }
             }
-            var tabclose = driver.WindowHandles;
-            for (int i = 0; i < tabclose.Count; i++)
-            {
-                driver.SwitchTo().Window(tabclose[i]);
-                driver.Close();
-            }
+
             return Task.CompletedTask;
 
+        }
+        private Task viewYoutubeAiso(int rowIndex)
+        {
+            demnguoc(5, rowIndex, "Mở Chorme selenium");
+            ChromeOptions chromeOptions = new ChromeOptions();
+            ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
+            chromeDriverService.HideCommandPromptWindow = true;
+            if (!Directory.Exists(ProfileFolderPath))
+            {
+                Directory.CreateDirectory(ProfileFolderPath);
+            }
+
+            if (Directory.Exists(ProfileFolderPath))
+            {
+                string nameProfile = dataGridAviso.Rows[rowIndex].Cells[1].Value.ToString();
+
+                chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
+            }
+
+            chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
+            //chromeOptions.EnableMobileEmulation("iPad Air");
+            IWebDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
+            driver.Navigate().GoToUrl("https://aviso.bz/work-youtube");
+
+
+            demnguoc(2, rowIndex, "Duyệt nhiệm vụ");
+            var querys = driver.FindElements(By.XPath("/html/body/table/tbody/tr[3]/td[2]/div"));
+            //*[@id="start-ads-1043904"]/span[1]
+            
+            int currentJob = 0;
+            // int index2 = 2;
+            try
+            {
+                if (querys.Count > 1)
+                {
+                    for (int i = 1; i < querys.Count; i++)
+                    {                       
+                        var link = querys[i].FindElements(By.TagName("span")); 
+                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                        executor.ExecuteScript("arguments[0].click();", link[0]);                                          
+
+                        demnguoc(RamdomTime(5, 7), rowIndex, "Click link");
+                        link = querys[i].FindElements(By.TagName("span"));                       
+                        executor.ExecuteScript("arguments[0].click();", link[0]);
+                        var xu = driver.FindElements(By.XPath("//*[@id=\"new-money-ballans\"]"));
+                        //dataGrid.Rows[rowIndex].Cells[4].Value = xuthem;
+                        dataGridAviso.Rows[rowIndex].Cells[3].Value = "View Video";
+                        dataGridAviso.Rows[rowIndex].Cells[5].Value = xu[0].Text;
+                        dataGridAviso.Rows[rowIndex].Cells[6].Value = listAccount[rowIndex].totalJob;
+                        var tabhandel = driver.WindowHandles;
+                        if (tabhandel.Count == 1)
+                        {
+                            continue;
+                        }
+                        driver.SwitchTo().Window(tabhandel[1]);
+                        demnguoc(RamdomTime(10, 14), rowIndex, "Load Video");
+
+                        var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+                        int second = int.Parse(time[0].Text);
+                        driver.SwitchTo().Frame(0);
+
+
+                        var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                        if (playVideo.Count > 0)
+                        {
+                            playVideo[0].Click();
+                            listAccount[rowIndex].totalJob = listAccount[rowIndex].totalJob + 1;
+                        }                     
+                        demnguoc(RamdomTime(2, 3), rowIndex, "Play Video");
+
+                        if (time.Count > 0)
+                        {
+                            demnguoc(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
+                        }
+                        else
+                        {
+                            demnguoc(60, rowIndex, "Xem View Video");
+                        }
+                        demnguoc(7, rowIndex, "Đóng tab Video");
+                        if (tabhandel.Count > 1)
+                        {
+                            driver.SwitchTo().Window(tabhandel[1]);
+                            driver.Close();
+                        }
+                        demnguoc(1, rowIndex, "Chuyển về tab chính");
+
+                        driver.SwitchTo().Window(tabhandel[0]);
+                        demnguoc(5, rowIndex, "Nhận tiền");
+                        currentJob = currentJob + 1;
+                        if ((currentJob % 5) == 0)
+                        {
+                            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,400)");
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                demnguoc(8, rowIndex, ex.Message);
+                strError = strError + ";" + ex.Message;
+                System.IO.File.WriteAllText("error.json", strError);
+                var tabclose = driver.WindowHandles;
+                for (int i = 0; i < tabclose.Count; i++)
+                {
+                    driver.SwitchTo().Window(tabclose[i]);
+                    driver.Close();
+                }
+            }
+
+            return Task.CompletedTask;
         }
         public void demnguoc(int time, int rowIndex, string job)
         {
@@ -480,7 +746,7 @@ namespace AutoAviso
             {
                 while (time > 0)
                 {
-                    if (!this.threadDictionarySEO.ContainsKey("SEO" +this.dataGridSEO[1, rowIndex].Value.ToString()))
+                    if (!this.threadDictionarySEO.ContainsKey("SEO" + this.dataGridSEO[1, rowIndex].Value.ToString()))
                     {
                         this.dataGridSEO.Invoke(new Action(() =>
                         {
@@ -525,7 +791,7 @@ namespace AutoAviso
                 chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
             }
             chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
-           // chromeOptions.EnableMobileEmulation("iPad Air");
+            // chromeOptions.EnableMobileEmulation("iPad Air");
             IWebDriver driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
             driver.Navigate().GoToUrl("https://aviso.bz/?r=nlduong");
 
@@ -542,14 +808,16 @@ namespace AutoAviso
                     {
                         var i = 0;
                         while (i < 15)
-                        {                          
-                          
-                                await traffic(e.RowIndex);
-                           
-                               // await LikeYoutube(e.RowIndex);
-                           
-                              //  await viewYoutube(e.RowIndex);
-                           
+                        {
+
+                            await viewYoutubeAiso(e.RowIndex);  
+
+                            await traffic(e.RowIndex);
+
+                            // await LikeYoutube(e.RowIndex);
+
+                            //  await viewYoutube(e.RowIndex);
+
                             i++;
                             dataGridAviso.Rows[e.RowIndex].Cells[7].Value = "Hết nhiệm vụ dừng";
                             demnguoc(360, e.RowIndex, "Thời gian xoay vòng nhiệm vụ");
@@ -590,7 +858,7 @@ namespace AutoAviso
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {           
+        {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.AcceptInsecureCertificates = true;
             //chromeOptions.Proxy = new Proxy { HttpProxy = ":7738", SslProxy = "103.185.186.225:7738", Kind = ProxyKind.Manual };
@@ -612,21 +880,21 @@ namespace AutoAviso
             proxy.Kind = ProxyKind.Manual;
             proxy.HttpProxy = "103.185.186.225:27738"; // địa chỉ proxy và port
             proxy.SslProxy = "103.185.186.225:27738";
-           // proxy.ProxyAutoConfigUrl = null;
+            // proxy.ProxyAutoConfigUrl = null;
             // Thiết lập thông tin đăng nhập vào proxy
             proxy.SocksUserName = "nlduong2007";
             proxy.SocksPassword = "5e6ae8b9";
             // Khởi tạo đối tượng ChromeOptions và add Proxy vào          
             chromeOptions.Proxy = proxy;
 
-           
+
 
             chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
             chromeOptions.EnableMobileEmulation("iPad Air");
             IWebDriver driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
 
             driver.Navigate().GoToUrl("https://whoer.net/");
-           
+
         }
 
         private void dataGridSEO_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -658,22 +926,141 @@ namespace AutoAviso
                         chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=850,850", "--disable-gpu");
                         IWebDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
                         driver.Navigate().GoToUrl("https://seo-fast.ru/login");
+                        demnguocSEO(5, e.RowIndex, "Load page");
+                        var query = driver.FindElement(By.XPath("//*[@id=\"logusername\"]"));
+                        query.SendKeys(listAccountSEO[e.RowIndex].id);
+                        demnguocSEO(3, e.RowIndex, "Nhập Username");
+                        query = driver.FindElement(By.XPath("//*[@id=\"logpassword\"]"));
+                        query.SendKeys(listAccountSEO[e.RowIndex].pass);
+                        demnguocSEO(3, e.RowIndex, "Nhập Password");
+                        // 
+                        // query.Click();
+                        demnguocSEO(5, e.RowIndex, "Đăng Nhập");
 
 
-                        demnguocSEO(100, e.RowIndex, "Load page");
-
+                        demnguocSEO(15, e.RowIndex, "Load page");
+                        reloadPageTask(driver, e.RowIndex);
+                        demnguocSEO(RamdomTime(10, 15), e.RowIndex, "Load page");
+                        int oldNV = 0;
                         while (i < 15)
                         {
+                            //var querys = driver.FindElements(By.XPath("/html/body/div[9]/div/div/table[2]/tbody/tr/td[2]/div[15]/div/div/div[2]/center/a)"));
+                            //if (querys.Count() > 0)
+                            //{
+                            //    reloadPageTask(driver, e.RowIndex);
+                            //}
+                            if (i > 0)
+                            {
+                                driver = driverSEO;
 
-                           // await traffic(e.RowIndex);
+                                demnguocSEO(RamdomTime(5, 10), e.RowIndex, "Load page");
+                                var nv = RamdomTime(0, 2);
+                                for (int k = 0; k < 10; k++)
+                                {
+                                    if (oldNV == nv)
+                                    {
+                                        nv = RamdomTime(0, 3);
+                                    }
+                                    else
+                                    {
+                                        oldNV = nv;
+                                        break;
+                                    }
+                                }
 
-                            // await LikeYoutube(e.RowIndex);
+                                if (nv == 3)
+                                {
+                                    driver.Navigate().GoToUrl("https://seo-fast.ru/work_youtube?rutube_video");
+                                }
+                                else if (nv == 0)
+                                {
+                                    driver.Navigate().GoToUrl("https://seo-fast.ru/work_youtube?youtube_expensive");
+                                }
+                                else if (nv == 1)
+                                {
+                                    driver.Navigate().GoToUrl("https://seo-fast.ru/work_youtube?youtube_video_simple");
+                                }
+                                else
+                                {
+                                    driver.Navigate().GoToUrl("https://seo-fast.ru/work_youtube?youtube_video_bonus");
+                                }
+                                var querys = driver.FindElements(By.XPath("//*[@id=\"echoall\"]/table/tbody/tr"));
+                                if (querys.Count == 0)
+                                {
+                                    reloadPageTask(driver, e.RowIndex);
+                                    demnguocSEO(RamdomTime(10, 15), e.RowIndex, "Load page");
+                                    query = driver.FindElement(By.XPath("/html/body/div[9]/div/div/table[2]/tbody/tr/td[1]/div[1]/nav/div[3]/ul/li[1]/a[2]/div[9]"));
+                                    query.Click();
+                                    demnguocSEO(10, e.RowIndex, "Load page nv YouTube");
+                                    querys = driver.FindElements(By.XPath("/html/body/div[10]/div/div/table[2]/tbody/tr/td[2]/div[15]/div/div/div[5]/a"));
+                                    nv = RamdomTime(0, 2);
+                                    oldNV = nv;
+                                    if (chkViewRuVideo.Checked)
+                                    {
+                                        querys[6].Click();
+                                        demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                        await viewRutubeSEO(e.RowIndex, driver);
+                                    }
+                                    if (chkLikeSeoVideo.Checked)
+                                    {
+                                        querys[4].Click();
+                                        demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                        await LikeYoutube(e.RowIndex, driver);
+                                    }
+                                    if (chkViewYoutube.Checked)
+                                    {
+                                        querys[nv].Click();
+                                        demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");                                        
+                                        await viewYoutubeSEO(e.RowIndex, driver);
+                                      
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                query = driver.FindElement(By.XPath("/html/body/div[9]/div/div/table[2]/tbody/tr/td[1]/div[1]/nav/div[3]/ul/li[1]/a[2]/div[9]"));
+                                query.Click();
+                                demnguocSEO(10, e.RowIndex, "Load page nv YouTube");
+                                var querys = driver.FindElements(By.XPath("/html/body/div[10]/div/div/table[2]/tbody/tr/td[2]/div[15]/div/div/div[5]/a"));
+                                if (chkViewRuVideo.Checked)
+                                {
+                                    querys[6].Click();
+                                    demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                    await viewRutubeSEO(e.RowIndex, driver);
+                                }
+                                if (chkLikeSeoVideo.Checked)
+                                {
+                                    querys[3].Click();
+                                    demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                    await LikeYoutube(e.RowIndex, driver);
+                                }
+                                if (chkViewYoutube.Checked)
+                                {
+                                    for (int j = 2; j >=0 ; j--)
+                                    {
+                                        if (j < 2)
+                                        {
+                                            querys = driver.FindElements(By.XPath("/html/body/div[8]/div/div/table[2]/tbody/tr/td[2]/div[15]/div/div/div[5]/a"));
+                                        }
+                                        querys[j].Click();
+                                        demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                        await viewYoutubeSEO(e.RowIndex, driver);
+                                        driver.Navigate().Refresh();
+                                        demnguocSEO(10, e.RowIndex, "Chờ load nv YouTube");
+                                    }
+                                }
+                                //querys[3].Click();
+                            }
 
-                             await viewYoutubeSEO(e.RowIndex, driver);
+                            // await traffic(e.RowIndex);
+
+                            //await LikeYoutube(e.RowIndex, driver);
+
+                            //  await viewYoutubeSEO(e.RowIndex, driver);
 
                             i++;
                             dataGridSEO.Rows[e.RowIndex].Cells[7].Value = "Hết nhiệm vụ dừng";
-                            demnguocSEO(360, e.RowIndex, "Thời gian xoay vòng nhiệm vụ");
+                            demnguocSEO(RamdomTime(100, 120), e.RowIndex, "Thời gian xoay vòng nhiệm vụ");
                         }
 
 
@@ -690,6 +1077,50 @@ namespace AutoAviso
                 }
             }
 
+        }
+        private void reloadPageTask(IWebDriver driver, int rowIndex)
+        {
+
+            var query = driver.FindElement(By.XPath("/html/body/div[8]/div/div/table[2]/tbody/tr/td[1]/div[1]/nav/div[3]/ul/li[1]/a[2]/div[1]"));
+            query.Click();
+            demnguocSEO(10, rowIndex, "Click task");
+
+            var querys = driver.FindElements(By.XPath("/html/body/div[9]/div/div/table[2]/tbody/tr/td[2]/div[15]/div/div/center/table[2]/tbody/tr"));
+            int indexran = 0;
+            var ran = RamdomTime(1, 10);
+            if (querys.Count > 0)
+            {
+                for (int j = 1; j < querys.Count; j++)
+                {
+                    var style = querys[j].GetAttribute("style");
+                    if (style.IndexOf("display:") > -1)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        indexran++;
+                    }
+
+                    var linkClick = querys[j].FindElements(By.TagName("a"));
+                    if (linkClick.Count > 2 && indexran == ran)
+                    {
+                        IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                        executor.ExecuteScript("arguments[0].click();", linkClick[0]);
+                        demnguocSEO(RamdomTime(6, 7), rowIndex, "Change tab");
+
+                        var tabhandel = driver.WindowHandles;
+                        if (tabhandel.Count > 1)
+                        {
+                            driver.SwitchTo().Window(tabhandel[1]);
+                            driver.Close();
+                        }
+                        driver.SwitchTo().Window(tabhandel[0]);
+                        break;
+                    }
+
+                }
+            }
         }
 
         private void dataGridSEO_MouseClick(object sender, MouseEventArgs e)
@@ -736,7 +1167,7 @@ namespace AutoAviso
     public class Account
     {
         public string id { get; set; }
-        public string pass { get; set; } 
+        public string pass { get; set; }
         public int totalJob { get; set; }
         public int totalFailJob { get; set; }
     }
