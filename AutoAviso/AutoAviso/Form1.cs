@@ -821,11 +821,20 @@ namespace AutoAviso
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
                         driver.SwitchTo().Frame(0);
-                        var playVideo = driver.FindElements(By.XPath("/html/body/div/div/div/div[4]/div[2]/div[1]/div[2]/button"));
+                        var unavailable = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span"));
+                        var privateVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span/span"));
+
+                        if (unavailable.Count > 0 || privateVideo.Count > 0)
+                        {
+                            driver.SwitchTo().Window(tabhandel[1]);
+                            driver.Close();
+                            continue;
+                        }
+                        var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
                         if (playVideo.Count > 0)
                         {
                             playVideo[0].Click();
-                            listAccountPro[rowIndex].totalJob = listAccountPro[rowIndex].totalJob + 1;
+                            listAccount[rowIndex].totalJob = listAccount[rowIndex].totalJob + 1;
                         }
                         demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
 
@@ -844,15 +853,7 @@ namespace AutoAviso
                         {
                             second = int.Parse(time[0].Text);
                             driver.SwitchTo().Frame(0);
-                            var unavailable = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span"));
-                            var privateVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span/span"));
 
-                            if (unavailable.Count > 0 || privateVideo.Count > 0)
-                            {
-                                driver.SwitchTo().Window(tabhandel[1]);
-                                driver.Close();
-                                continue;
-                            }
                             playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
                             if (playVideo.Count > 0)
                             {
@@ -861,6 +862,8 @@ namespace AutoAviso
                             demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
                             demnguocPro(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
                         }
+
+                       
 
                         demnguocPro(5, rowIndex, "Đóng tab Video");
                         if (tabhandel.Count > 1)
