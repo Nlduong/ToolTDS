@@ -816,7 +816,7 @@ namespace AutoAviso
                             continue;
                         }
                         driver.SwitchTo().Window(tabhandel[1]);
-                        demnguocSEO(RamdomTime(10, 14), rowIndex, "Load Video");
+                        demnguocPro(RamdomTime(10, 14), rowIndex, "Load Video");
 
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
@@ -834,7 +834,7 @@ namespace AutoAviso
                         if (playVideo.Count > 0)
                         {
                             playVideo[0].Click();
-                            listAccount[rowIndex].totalJob = listAccount[rowIndex].totalJob + 1;
+                            listAccountPro[rowIndex].totalJob = listAccountPro[rowIndex].totalJob + 1;
                         }
                         demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
 
