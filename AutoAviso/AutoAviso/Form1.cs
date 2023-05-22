@@ -820,50 +820,102 @@ namespace AutoAviso
 
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
-                        driver.SwitchTo().Frame(0);
-                        var unavailable = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span"));
-                        var privateVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span/span"));
-
-                        if (unavailable.Count > 0 || privateVideo.Count > 0)
+                        if (second >= 20)
                         {
-                            driver.SwitchTo().Window(tabhandel[1]);
-                            driver.Close();
-                            continue;
-                        }
-                        var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
-                        if (playVideo.Count > 0)
-                        {
-                            playVideo[0].Click();
-                            listAccountPro[rowIndex].totalJob = listAccountPro[rowIndex].totalJob + 1;
-                        }
-                        demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
-
-                        if (time.Count > 0)
-                        {
-                            demnguocPro(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
+                            while (second > 0)
+                            {
+                                
+                                driver.SwitchTo().Window(tabhandel[1]);
+                                time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+                                var second1 = time[0].Text == "" ? 0 : int.Parse(time[0].Text);
+                                demnguocPro(RamdomTime(3,4), rowIndex, "Check Time");
+                                var time1 = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+                                second = time1[0].Text == "" ? 0 : int.Parse(time1[0].Text);
+                               
+                                if (second == second1)
+                                {
+                                    driver.SwitchTo().Frame(0);
+                                    var index = 27;
+                                    var checkRelay = false;
+                                    while(index <33)
+                                    {
+                                        var replayVideo = driver.FindElements(By.XPath("/html/body/div[1]/div/div["+ index + "]/div[2]/div[1]/button"));
+                                        if (replayVideo.Count > 0)
+                                        {
+                                            checkRelay = true;
+                                            replayVideo[0].Click();
+                                            demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
+                                            break;
+                                        }
+                                        index++;
+                                    }
+                                  
+                                    if(checkRelay==false)
+                                    {
+                                            var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                                            if (playVideo.Count > 0)
+                                            {
+                                                playVideo[0].Click();
+                                                listAccountPro[rowIndex].totalJob = listAccountPro[rowIndex].totalJob + 1;
+                                            }
+                                            demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
+                                      
+                                    }  
+                                }
+                                demnguocPro(RamdomTime(10, 15), rowIndex, "Xem View Video");
+                                if (second == 0)
+                                {
+                                    break;
+                                }
+                            }
                         }
                         else
                         {
-                            demnguocPro(60, rowIndex, "Xem View Video");
-                        }
-                        driver.SwitchTo().Window(tabhandel[1]);
-                        time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
-
-                        if (time.Count > 0 && time[0].Text != "")
-                        {
-                            second = int.Parse(time[0].Text);
                             driver.SwitchTo().Frame(0);
+                            var unavailable = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span"));
+                            var privateVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[15]/div[1]/div[2]/div[1]/span/span"));
 
-                            playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                            if (unavailable.Count > 0 || privateVideo.Count > 0)
+                            {
+                                driver.SwitchTo().Window(tabhandel[1]);
+                                driver.Close();
+                                continue;
+                            }
+                            var playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
                             if (playVideo.Count > 0)
                             {
                                 playVideo[0].Click();
+                                listAccountPro[rowIndex].totalJob = listAccountPro[rowIndex].totalJob + 1;
                             }
                             demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
-                            demnguocPro(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
-                        }
 
-                       
+                            if (time.Count > 0)
+                            {
+                                demnguocPro(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
+                            }
+                            else
+                            {
+                                demnguocPro(60, rowIndex, "Xem View Video");
+                            }
+                            driver.SwitchTo().Window(tabhandel[1]);
+                            time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
+
+                            if (time.Count > 0 && time[0].Text != "")
+                            {
+                                second = int.Parse(time[0].Text);
+                                driver.SwitchTo().Frame(0);
+
+                                playVideo = driver.FindElements(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                                if (playVideo.Count > 0)
+                                {
+                                    playVideo[0].Click();
+                                }
+                                demnguocPro(RamdomTime(2, 3), rowIndex, "Play Video");
+                                demnguocPro(RamdomTime(second + 1, second + 3), rowIndex, "Xem View Video");
+                            }
+                        }
+                        driver.SwitchTo().Window(tabhandel[1]);
+                        time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
 
                         demnguocPro(5, rowIndex, "Đóng tab Video");
                         if (tabhandel.Count > 1)
