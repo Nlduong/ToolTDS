@@ -837,7 +837,7 @@ namespace AutoAviso
                                     driver.SwitchTo().Frame(0);
                                     var index = 27;
                                     var checkRelay = false;
-                                    while(index <33)
+                                    while(index <35)
                                     {
                                         var replayVideo = driver.FindElements(By.XPath("/html/body/div[1]/div/div["+ index + "]/div[2]/div[1]/button"));
                                         if (replayVideo.Count > 0)
