@@ -20,7 +20,7 @@ namespace AutoAviso
         int index = 0;
         string strError = "";
         int RowIndexGrid = 0;
-        public static string ProfileFolderPath = @"D:\ToolAuto\ToolTDS\AutoAviso\AutoAviso\bin\Debug\Profile";
+        public static string ProfileFolderPath = "";
         private Dictionary<string, Thread> threadDictionary = new Dictionary<string, Thread>();
         private Dictionary<string, Thread> threadDictionarySEO = new Dictionary<string, Thread>();
         private Dictionary<string, Thread> threadDictionaryPro = new Dictionary<string, Thread>();
@@ -30,11 +30,16 @@ namespace AutoAviso
         List<Account> listAccount = new List<Account>();
         List<Account> listAccountSEO = new List<Account>();
         List<Account> listAccountPro = new List<Account>();
+        Config stconfig = new Config ();
         public Form1()
         {
             InitializeComponent();
+            StreamReader config = new StreamReader("Config.json");
+            string jsonString = config.ReadToEnd();
+            stconfig = JsonConvert.DeserializeObject<Config>(jsonString);
+            ProfileFolderPath = stconfig.PatchProfile.ToString();
             StreamReader r = new StreamReader("Account.json");
-            string jsonString = r.ReadToEnd();
+            jsonString = r.ReadToEnd();
             listAccount = JsonConvert.DeserializeObject<List<Account>>(jsonString);
             StreamReader rSeo = new StreamReader("AccountSEO.json");
             jsonString = rSeo.ReadToEnd();
@@ -653,6 +658,7 @@ namespace AutoAviso
             ChromeOptions chromeOptions = new ChromeOptions();
             ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
             chromeDriverService.HideCommandPromptWindow = true;
+           
             if (!Directory.Exists(ProfileFolderPath))
             {
                 Directory.CreateDirectory(ProfileFolderPath);
@@ -813,7 +819,7 @@ namespace AutoAviso
                             continue;
                         }
                         driver.SwitchTo().Window(tabhandel[1]);
-                        demnguocPro(RamdomTime(10, 14), rowIndex, "Load Video");
+                        demnguocPro(RamdomTime(7, 10), rowIndex, "Load Video");
 
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
@@ -1648,6 +1654,13 @@ namespace AutoAviso
     {
         public string id { get; set; }
         public string pass { get; set; }
+        public int totalJob { get; set; }
+        public int totalFailJob { get; set; }
+    }
+    public class Config
+    {
+        public string PatchProfile { get; set; }
+        public string Time { get; set; }
         public int totalJob { get; set; }
         public int totalFailJob { get; set; }
     }
