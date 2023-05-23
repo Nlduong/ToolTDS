@@ -516,9 +516,7 @@ namespace AutoAviso
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
             }
-
             return Task.CompletedTask;
-
         }
 
         private Task traffic(int rowIndex)
@@ -632,7 +630,6 @@ namespace AutoAviso
                         index1 = index1 + 1;
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -823,21 +820,23 @@ namespace AutoAviso
                         if (second >= 20)
                         {
                             while (second > 0)
-                            {
-                                
+                            {                                
                                 driver.SwitchTo().Window(tabhandel[1]);
                                 time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                                 var second1 = time[0].Text == "" ? 0 : int.Parse(time[0].Text);
                                 demnguocPro(RamdomTime(3,4), rowIndex, "Check Time");
                                 var time1 = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                                 second = time1[0].Text == "" ? 0 : int.Parse(time1[0].Text);
-                               
+                                if (second == 0)
+                                {
+                                    break;
+                                }
                                 if (second == second1)
                                 {
                                     driver.SwitchTo().Frame(0);
                                     var index = 27;
                                     var checkRelay = false;
-                                    while(index <35)
+                                    while(index < 35)
                                     {
                                         var replayVideo = driver.FindElements(By.XPath("/html/body/div[1]/div/div["+ index + "]/div[2]/div[1]/button"));
                                         if (replayVideo.Count > 0)
@@ -862,11 +861,7 @@ namespace AutoAviso
                                       
                                     }  
                                 }
-                                demnguocPro(RamdomTime(10, 15), rowIndex, "Xem View Video");
-                                if (second == 0)
-                                {
-                                    break;
-                                }
+                                demnguocPro(RamdomTime(10, 15), rowIndex, "Xem View Video");                              
                             }
                         }
                         else
@@ -938,16 +933,9 @@ namespace AutoAviso
                             driver.Close();
                         }
                         demnguocPro(1, rowIndex, "Chuyển về tab chính");
-
-                        
-
                         driver.SwitchTo().Window(tabhandel[0]);
                         demnguocPro(5, rowIndex, "Nhận tiền");
-                        //currentJob = currentJob + 1;
-                        //if ((currentJob % 5) == 0)
-                        //{
                         ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,55)");
-                        //}
                     }
                 }
 
