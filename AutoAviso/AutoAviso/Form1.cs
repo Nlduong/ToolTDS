@@ -967,6 +967,12 @@ namespace AutoAviso
                         }
                       
                     }
+                    var tabclose = driver.WindowHandles;
+                    for (int i = 0; i < tabclose.Count; i++)
+                    {
+                        driver.SwitchTo().Window(tabclose[i]);
+                        driver.Close();
+                    }
                 }
 
             }
