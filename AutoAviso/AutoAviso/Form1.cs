@@ -829,7 +829,7 @@ namespace AutoAviso
                         executor.ExecuteScript("arguments[0].click();", link[0]);
                         var xu = driver.FindElements(By.XPath("//*[@id=\"new-money-ballans\"]/font/font"));
                         //dataGrid.Rows[rowIndex].Cells[4].Value = xuthem;
-                        dataGridProfitcent.Rows[rowIndex].Cells[3].Value = "View Ru Video";
+                        dataGridProfitcent.Rows[rowIndex].Cells[3].Value = "View Video";
                         dataGridProfitcent.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGridProfitcent.Rows[rowIndex].Cells[6].Value = listAccountPro[rowIndex].totalJob;
                         var tabhandel = driver.WindowHandles;
@@ -960,7 +960,12 @@ namespace AutoAviso
                         demnguocPro(1, rowIndex, "Chuyển về tab chính");
                         driver.SwitchTo().Window(tabhandel[0]);
                         demnguocPro(5, rowIndex, "Nhận tiền");
-                        ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,55)");
+                        currentJob = currentJob + 1;
+                        if(currentJob %5 ==0)
+                        {
+                            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,275)");
+                        }
+                      
                     }
                 }
 
@@ -977,7 +982,7 @@ namespace AutoAviso
                 driver.SwitchTo().Window(tabclose[0]);
                 driver.Navigate().Refresh();
                 demnguocPro(8, rowIndex, "Load lại page");
-                viewYoutubePro(rowIndex, driver);
+               // viewYoutubePro(rowIndex, driver);
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
 
