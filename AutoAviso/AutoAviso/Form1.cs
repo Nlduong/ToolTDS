@@ -980,14 +980,14 @@ namespace AutoAviso
             {
                 demnguocPro(8, rowIndex, ex.Message);
                 var tabclose = driver.WindowHandles;
-                for (int i = 1; i < tabclose.Count; i++)
+                for (int i = 0; i < tabclose.Count; i++)
                 {
                     driver.SwitchTo().Window(tabclose[i]);
                     driver.Close();
                 }
-                driver.SwitchTo().Window(tabclose[0]);
-                driver.Navigate().Refresh();
-                demnguocPro(8, rowIndex, "Load lại page");
+                //driver.SwitchTo().Window(tabclose[0]);
+                //driver.Navigate().Refresh();
+                //demnguocPro(8, rowIndex, "Load lại page");
                // viewYoutubePro(rowIndex, driver);
                 strError = strError + ";" + ex.Message;
                 System.IO.File.WriteAllText("error.json", strError);
@@ -1758,7 +1758,7 @@ namespace AutoAviso
             chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
             // chromeOptions.EnableMobileEmulation("iPad Air");
             IWebDriver driver = (IWebDriver)new ChromeDriver(chromeDriverService, chromeOptions);
-            driver.Navigate().GoToUrl("https://seo-fast.ru/?r=2799414");
+            driver.Navigate().GoToUrl("https://profitcentr.com/?r=nlduong2008");
         }
 
         private void dataGridProfitcent_CellContentClick(object sender, DataGridViewCellEventArgs e)
