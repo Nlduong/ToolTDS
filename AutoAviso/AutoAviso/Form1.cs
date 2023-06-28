@@ -112,7 +112,7 @@ namespace AutoAviso
             dataTablePro.Columns.Add("#", typeof(int));
             dataTablePro.Columns.Add("ID Google", typeof(string));
             dataTablePro.Columns.Add("Job đang làm", typeof(string));
-            dataTablePro.Columns.Add("Credits Thêm", typeof(string));
+            dataTablePro.Columns.Add("Current Job", typeof(string));
             dataTablePro.Columns.Add("Tổng Credits", typeof(string));
             dataTablePro.Columns.Add("Tổng Job", typeof(string));
             dataTablePro.Columns.Add("Trạng Thái", typeof(string));
@@ -623,7 +623,7 @@ namespace AutoAviso
                             }
                         }
 
-                        demnguoc(5, rowIndex, "Đóng tab");
+                        demnguoc(RamdomTime(2, 5), rowIndex, "Đóng tab");
                         if (tabhandel.Count > 1)
                         {
                             driver.SwitchTo().Window(tabhandel[1]);
@@ -632,17 +632,17 @@ namespace AutoAviso
                         demnguoc(1, rowIndex, "Chuyển về tab chính");
 
                         driver.SwitchTo().Window(tabhandel[0]);
-                        demnguoc(5, rowIndex, "Nhận tiền");
+                        demnguoc(RamdomTime(1,5), rowIndex, "Nhận tiền");
 
                         demnguoc(RamdomTime(5,7), rowIndex, "Chuyển nv kế tiếp");
                         index1 = index1 + 1;
-                    }
-                    var tabclose = driver.WindowHandles;
-                    for (int i = 0; i < tabclose.Count; i++)
-                    {
-                        driver.SwitchTo().Window(tabclose[i]);
-                        driver.Close();
-                    }
+                    }                                   
+                }
+                var tabclose = driver.WindowHandles;
+                for (int i = 0; i < tabclose.Count; i++)
+                {
+                    driver.SwitchTo().Window(tabclose[i]);
+                    driver.Close();
                 }
             }
             catch (Exception ex)
@@ -713,7 +713,7 @@ namespace AutoAviso
                             continue;
                         }
                         driver.SwitchTo().Window(tabhandel[1]);
-                        demnguoc(RamdomTime(7, 10), rowIndex, "Load Video");
+                        demnguoc(RamdomTime(5, 10), rowIndex, "Load Video");
                         var time = driver.FindElements(By.XPath("//*[@id=\"tmr\"]"));
                         int second = int.Parse(time[0].Text);
                         driver.SwitchTo().Frame(0);
@@ -777,7 +777,7 @@ namespace AutoAviso
                         demnguoc(1, rowIndex, "Chuyển về tab chính");
 
                         driver.SwitchTo().Window(tabhandel[0]);
-                        demnguoc(5, rowIndex, "Nhận tiền");
+                        demnguoc(RamdomTime(2, 5), rowIndex, "Nhận tiền");
                         currentJob = currentJob + 1;
                         if ((currentJob % 5) == 0)
                         {
@@ -791,7 +791,6 @@ namespace AutoAviso
                         driver.Close();
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -813,13 +812,13 @@ namespace AutoAviso
         private Task viewYoutubePro(int rowIndex, IWebDriver driver)
         {
             var querys = driver.FindElements(By.XPath("//*[@id=\"work-youtube\"]/div"));
-
+            var toalNv = RamdomTime(150, 250);
             int currentJob = 0;
             try
             {
                 if (querys.Count > 1)
                 {
-                    for (int i = 0; i < querys.Count; i++)
+                    for (int i = 0; i < toalNv; i++)
                     {
                         var link = querys[i].FindElements(By.TagName("span"));
                         IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
@@ -830,6 +829,7 @@ namespace AutoAviso
                         var xu = driver.FindElements(By.XPath("//*[@id=\"new-money-ballans\"]/font/font"));
                         //dataGrid.Rows[rowIndex].Cells[4].Value = xuthem;
                         dataGridProfitcent.Rows[rowIndex].Cells[3].Value = "View Video";
+                        dataGridProfitcent.Rows[rowIndex].Cells[4].Value = i.ToString()+ "/" + toalNv.ToString();
                         dataGridProfitcent.Rows[rowIndex].Cells[5].Value = xu[0].Text;
                         dataGridProfitcent.Rows[rowIndex].Cells[6].Value = listAccountPro[rowIndex].totalJob;
                         var tabhandel = driver.WindowHandles;
