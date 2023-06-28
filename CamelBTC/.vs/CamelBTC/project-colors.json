@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "002ca7e7-208e-47b4-a606-6b661db1976e": {
+      "ProjectGuid": "002ca7e7-208e-47b4-a606-6b661db1976e",
+      "DisplayName": "CamelBTC",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
