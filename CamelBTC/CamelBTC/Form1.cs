@@ -276,8 +276,11 @@ namespace CamelBTC
                     else
                     {
                         var str = request.Replace("\n", "").Split('\r');
+                        var images = query[0].FindElements(By.TagName("img"));
                         var gold = int.Parse(str[0]);
                         var log = int.Parse(str[1]);
+                       
+
                         if (listAccount[rowIndex].Gold >= gold)
                         {
                             if (listAccount[rowIndex].Log >= log)
@@ -356,6 +359,18 @@ namespace CamelBTC
                         query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
                         demnguoc(RamdomTime(1, 3), e.RowIndex, "Click Đăng nhập");
                         query.Click();
+                        demnguoc(RamdomTime(4, 7), e.RowIndex, "Nhập Pass");
+
+                        var querys = driver.FindElements(By.XPath("/html/body/center/form/input[1]"));
+                        if (querys.Count > 0)
+                        {
+                            querys[0].SendKeys(listAccount[e.RowIndex].pass);
+                            demnguoc(RamdomTime(4, 7), e.RowIndex, "Nhập Pass");
+                            query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
+                            demnguoc(RamdomTime(1, 3), e.RowIndex, "Click Đăng nhập");
+                            query.Click();
+                        }
+                      
                         while (true)
                         {
                             getDataAccount(driver, e.RowIndex);
@@ -370,16 +385,31 @@ namespace CamelBTC
                             {
                                 demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Gold");
                                 claimGold(driver, e.RowIndex);
+                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                                if(robot.Count >0)
+                                {
+                                    robot[0].Click();
+                                }    
                             }
                             if (chkClaimLog.Checked)
                             {
                                 demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Log");
                                 claimLog(driver, e.RowIndex);
+                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                                if (robot.Count > 0)
+                                {
+                                    robot[0].Click();
+                                }
                             }
                             if (chkClaimRock.Checked)
                             {
                                 demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Rock");
                                 claimRock(driver, e.RowIndex);
+                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                                if (robot.Count > 0)
+                                {
+                                    robot[0].Click();
+                                }
                             }
                             demnguoc(RamdomTime(1, 3), e.RowIndex, "Load lại tài nguyên");
                             getDataAccount(driver, e.RowIndex);
