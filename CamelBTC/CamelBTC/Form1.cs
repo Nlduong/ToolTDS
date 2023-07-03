@@ -328,106 +328,11 @@ namespace CamelBTC
                     cell.Value = "Kết thúc";
                     Thread thread = new Thread((ThreadStart)(async () =>
                     {
-                        var i = 0;
-
-                        demnguoc(5, e.RowIndex, "Mở Chorme selenium");
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
-                        chromeDriverService.HideCommandPromptWindow = true;
-                        //if (!Directory.Exists(ProfileFolderPath))
-                        //{
-                        //    Directory.CreateDirectory(ProfileFolderPath);
-                        //}
-
-                        //if (Directory.Exists(ProfileFolderPath))
-                        //{
-                        //    string nameProfile = dataGridAviso.Rows[rowIndex].Cells[1].Value.ToString();
-
-                        //    chromeOptions.AddArguments("user-data-dir=" + ProfileFolderPath + "/" + nameProfile);
-                        //}
-
-                        chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
-                        // chromeOptions.EnableMobileEmulation("iPad Air");
-                        IWebDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
-                        driver.Navigate().GoToUrl("https://camelbtc.com/index.php");
-
-                        //  await viewYoutube(e.RowIndex);
-                        demnguoc(RamdomTime(4, 7), e.RowIndex, "Load page");
-                        var query = driver.FindElement(By.XPath("/html/body/center/form/input[1]"));
-                        query.SendKeys(listAccount[e.RowIndex].id);
-                        demnguoc(RamdomTime(4, 7), e.RowIndex, "Nhập Username");
-                        query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
-                        demnguoc(RamdomTime(1, 3), e.RowIndex, "Click Đăng nhập");
-                        query.Click();
-                        demnguoc(RamdomTime(4, 7), e.RowIndex, "Nhập Pass");
-
-                        var querys = driver.FindElements(By.XPath("/html/body/center/form/input[1]"));
-                        if (querys.Count > 0)
+                        var i = 0;  
+                        while (i < 20)
                         {
-                            querys[0].SendKeys(listAccount[e.RowIndex].pass);
-                            demnguoc(RamdomTime(4, 7), e.RowIndex, "Nhập Pass");
-                            query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
-                            demnguoc(RamdomTime(1, 3), e.RowIndex, "Click Đăng nhập");
-                            query.Click();
-                        }
-                      
-                        while (true)
-                        {
-                            getDataAccount(driver, e.RowIndex);
-                            string str = "Gold:" + listAccount[e.RowIndex].Gold;
-                            str = str + ",Log: " + listAccount[e.RowIndex].Log;
-                            str = str + ",Rock: " + listAccount[e.RowIndex].Rock;
-                            str = str + ",Steel: " + listAccount[e.RowIndex].Steel;
-                            str = str + ",Food: " + listAccount[e.RowIndex].Food;
-
-                            dataGrid.Rows[e.RowIndex].Cells[3].Value = str;
-                            if(chkClaimGold.Checked)
-                            {
-                                demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Gold");
-                                claimGold(driver, e.RowIndex);
-                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
-                                if(robot.Count >0)
-                                {
-                                    robot[0].Click();
-                                }    
-                            }
-                            if (chkClaimLog.Checked)
-                            {
-                                demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Log");
-                                claimLog(driver, e.RowIndex);
-                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
-                                if (robot.Count > 0)
-                                {
-                                    robot[0].Click();
-                                }
-                            }
-                            if (chkClaimRock.Checked)
-                            {
-                                demnguoc(RamdomTime(1, 3), e.RowIndex, "Chuẩn bị claim Rock");
-                                claimRock(driver, e.RowIndex);
-                                var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
-                                if (robot.Count > 0)
-                                {
-                                    robot[0].Click();
-                                }
-                            }
-                            demnguoc(RamdomTime(1, 3), e.RowIndex, "Load lại tài nguyên");
-                            getDataAccount(driver, e.RowIndex);
-                            str = "Gold:" + listAccount[e.RowIndex].Gold;
-                            str = str + ",Log: " + listAccount[e.RowIndex].Log;
-                            str = str + ",Rock: " + listAccount[e.RowIndex].Rock;
-                            str = str + ",Steel: " + listAccount[e.RowIndex].Steel;
-                            str = str + ",Food: " + listAccount[e.RowIndex].Food;
-
-                            dataGrid.Rows[e.RowIndex].Cells[3].Value = str;
-                            if (chkCheckMarket.Checked)
-                            {
-                                demnguoc(RamdomTime(1, 3), e.RowIndex, "Check market");
-                                checkMarket(driver, e.RowIndex);
-                            }
-                            demnguoc(int.Parse(txtWaitTime.Text), e.RowIndex, "Chờ lần kế tiếp");
-                            driver.Navigate().Refresh();
-                            demnguoc(RamdomTime(3, 6), e.RowIndex, "Load page");
+                            openCamle(e.RowIndex);
+                             i++;
                         }
                         // query.SendKeys(listAccountSEO[e.RowIndex].pass);
 
@@ -449,6 +354,106 @@ namespace CamelBTC
                 }
             }
         }
+        private void openCamle(int RowIndex)
+        {
+            ChromeOptions chromeOptions = new ChromeOptions();
+            ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService("Chrome");
+            chromeDriverService.HideCommandPromptWindow = true;
+
+            chromeOptions.AddArguments("--disable-blink-features=AutomationControlled", "--disable-notifications", "--disable-popup-blocking", "--disable-geolocation", "--no-sandbox", "--window-size=820,850", "--disable-gpu");
+            // chromeOptions.EnableMobileEmulation("iPad Air");
+            IWebDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
+            try
+            {
+                demnguoc(5, RowIndex, "Mở Chorme selenium");
+               
+                driver.Navigate().GoToUrl("https://camelbtc.com/index.php");
+
+                //  await viewYoutube(e.RowIndex);
+                demnguoc(RamdomTime(4, 7), RowIndex, "Load page");
+                var query = driver.FindElement(By.XPath("/html/body/center/form/input[1]"));
+                query.SendKeys(listAccount[RowIndex].id);
+                demnguoc(RamdomTime(4, 7), RowIndex, "Nhập Username");
+                query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
+                demnguoc(RamdomTime(1, 3), RowIndex, "Click Đăng nhập");
+                query.Click();
+                demnguoc(RamdomTime(4, 7), RowIndex, "Nhập Pass");
+
+                var querys = driver.FindElements(By.XPath("/html/body/center/form/input[1]"));
+                if (querys.Count > 0)
+                {
+                    querys[0].SendKeys(listAccount[RowIndex].pass);
+                    demnguoc(RamdomTime(4, 7), RowIndex, "Nhập Pass");
+                    query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
+                    demnguoc(RamdomTime(1, 3), RowIndex, "Click Đăng nhập");
+                    query.Click();
+                }
+                while (true)
+                {
+                    getDataAccount(driver, RowIndex);
+                    string str = "Gold:" + listAccount[RowIndex].Gold;
+                    str = str + ",Log: " + listAccount[RowIndex].Log;
+                    str = str + ",Rock: " + listAccount[RowIndex].Rock;
+                    str = str + ",Steel: " + listAccount[RowIndex].Steel;
+                    str = str + ",Food: " + listAccount[RowIndex].Food;
+
+                    dataGrid.Rows[RowIndex].Cells[3].Value = str;
+                    if (chkClaimGold.Checked)
+                    {
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Gold");
+                        claimGold(driver, RowIndex);
+                        var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                        if (robot.Count > 0)
+                        {
+                            robot[0].Click();
+                        }
+                    }
+                    if (chkClaimLog.Checked)
+                    {
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Log");
+                        claimLog(driver, RowIndex);
+                        var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                        if (robot.Count > 0)
+                        {
+                            robot[0].Click();
+                        }
+                    }
+                    if (chkClaimRock.Checked)
+                    {
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Rock");
+                        claimRock(driver, RowIndex);
+                        var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                        if (robot.Count > 0)
+                        {
+                            robot[0].Click();
+                        }
+                    }
+                    demnguoc(RamdomTime(1, 3), RowIndex, "Load lại tài nguyên");
+                    getDataAccount(driver, RowIndex);
+                    str = "Gold:" + listAccount[RowIndex].Gold;
+                    str = str + ",Log: " + listAccount[RowIndex].Log;
+                    str = str + ",Rock: " + listAccount[RowIndex].Rock;
+                    str = str + ",Steel: " + listAccount[RowIndex].Steel;
+                    str = str + ",Food: " + listAccount[RowIndex].Food;
+
+                    dataGrid.Rows[RowIndex].Cells[3].Value = str;
+                    if (chkCheckMarket.Checked)
+                    {
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Check market");
+                        checkMarket(driver, RowIndex);
+                    }
+                    demnguoc(int.Parse(txtWaitTime.Text), RowIndex, "Chờ lần kế tiếp");
+                    driver.Navigate().Refresh();
+                    demnguoc(RamdomTime(3, 6), RowIndex, "Load page");
+                }
+            }
+            catch (Exception ex)
+            {
+                demnguoc(RamdomTime(3, 6), RowIndex, ex.Message);
+                driver.Close();
+                openCamle(RowIndex);
+            }
+            }
         private int RamdomTime(int begin, int end)
         {
             Random rnd = new Random();
