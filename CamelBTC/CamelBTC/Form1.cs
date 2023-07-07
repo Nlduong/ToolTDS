@@ -380,6 +380,7 @@ namespace CamelBTC
                 demnguoc(RamdomTime(4, 7), RowIndex, "Nhập Pass");
 
                 var querys = driver.FindElements(By.XPath("/html/body/center/form/input[1]"));
+
                 if (querys.Count > 0)
                 {
                     querys[0].SendKeys(listAccount[RowIndex].pass);
@@ -387,6 +388,11 @@ namespace CamelBTC
                     query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
                     demnguoc(RamdomTime(1, 3), RowIndex, "Click Đăng nhập");
                     query.Click();
+                    var test = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                    if (test.Count > 0)
+                    {
+                        test[0].Click();
+                    }
                 }
                 while (true)
                 {
@@ -402,6 +408,7 @@ namespace CamelBTC
                     {
                         demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Gold");
                         claimGold(driver, RowIndex);
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Check robot");
                         var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
                         if (robot.Count > 0)
                         {
@@ -412,16 +419,19 @@ namespace CamelBTC
                     {
                         demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Log");
                         claimLog(driver, RowIndex);
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Check robot");
                         var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
                         if (robot.Count > 0)
                         {
                             robot[0].Click();
                         }
+
                     }
                     if (chkClaimRock.Checked)
                     {
                         demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Rock");
                         claimRock(driver, RowIndex);
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Check robot");
                         var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
                         if (robot.Count > 0)
                         {
