@@ -269,8 +269,8 @@ namespace CamelBTC
                         }
                         if (src.IndexOf("rock") > 0)
                         {
-                            var gold = int.Parse(request);
-                            if (listAccount[rowIndex].Gold >= gold)
+                            var rock = int.Parse(request);
+                            if (listAccount[rowIndex].Rock >= rock)
                             {
                                 demnguoc(RamdomTime(4, 7), rowIndex, "Delivery");
                                 query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
@@ -337,12 +337,12 @@ namespace CamelBTC
                             }  
                           
 
-                            if (lstobj[i].Name == "wood" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            if (lstobj[i].Name == "wood" && listAccount[rowIndex].Log >= int.Parse(lstobj[i].Value))
                             {
                                 checkwood = true;
                             }
                            
-                            if (lstobj[i].Name == "rock" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            if (lstobj[i].Name == "rock" && listAccount[rowIndex].Rock >= int.Parse(lstobj[i].Value))
                             {
                                 checkrock = true;
                             }                          
@@ -507,14 +507,18 @@ namespace CamelBTC
                     str = str + ",Food: " + listAccount[RowIndex].Food;
 
                     dataGrid.Rows[RowIndex].Cells[3].Value = str;
-                    if (chkCheckMarket.Checked)
+                   
+                    for (int i = 0; i < 5; i++)
                     {
-                        demnguoc(RamdomTime(1, 3), RowIndex, "Check market");
-                        checkMarket(driver, RowIndex);
-                    }
-                    demnguoc(int.Parse(txtWaitTime.Text), RowIndex, "Chờ lần kế tiếp");
-                    driver.Navigate().Refresh();
-                    demnguoc(RamdomTime(3, 6), RowIndex, "Load page");
+                        if (chkCheckMarket.Checked)
+                        {
+                            demnguoc(RamdomTime(1, 3), RowIndex, "Check market");
+                            checkMarket(driver, RowIndex);
+                        }
+                        demnguoc(int.Parse(txtWaitTime.Text), RowIndex, "Chờ lần kế tiếp");
+                        driver.Navigate().Refresh();
+                        demnguoc(RamdomTime(3, 6), RowIndex, "Load page");
+                    }  
                 }
             }
             catch (Exception ex)

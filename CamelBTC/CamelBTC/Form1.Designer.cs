@@ -97,7 +97,7 @@
             this.txtWaitTime.Name = "txtWaitTime";
             this.txtWaitTime.Size = new System.Drawing.Size(100, 22);
             this.txtWaitTime.TabIndex = 14;
-            this.txtWaitTime.Text = "1000";
+            this.txtWaitTime.Text = "200";
             // 
             // chkClaimRock
             // 
