@@ -208,13 +208,8 @@ namespace CamelBTC
         private void checkMarket(IWebDriver driver, int rowIndex)
         {
             try
-            {
-                var query = driver.FindElements(By.XPath("/ html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[2]/td[1]/table/tbody/tr/td/center/font"));
-                if (query.Count() > 0)
-                {
-
-                }
-                query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[1]/td[3]/table[1]/tbody/tr/td/center/a/input"));
+            {              
+               var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[1]/td[3]/table[1]/tbody/tr/td/center/a/input"));
 
 
                 if (query.Count() > 0)
@@ -272,30 +267,95 @@ namespace CamelBTC
                                 }
                             }
                         }
+                        if (src.IndexOf("rock") > 0)
+                        {
+                            var gold = int.Parse(request);
+                            if (listAccount[rowIndex].Gold >= gold)
+                            {
+                                demnguoc(RamdomTime(4, 7), rowIndex, "Delivery");
+                                query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
+                                if (query.Count() > 0)
+                                {
+                                    query[0].Click();
+                                }
+                            }
+                        }
                     }
                     else
                     {
                         var str = request.Replace("\n", "").Split('\r');
                         var images = query[0].FindElements(By.TagName("img"));
-                        var gold = int.Parse(str[0]);
-                        var log = int.Parse(str[1]);
-                       
-
-                        if (listAccount[rowIndex].Gold >= gold)
+                        List<Market> lstobj = new List<Market>();
+                      
+                        foreach (var image in images)
                         {
-                            if (listAccount[rowIndex].Log >= log)
+                            if (image.GetAttribute("src").IndexOf("img/gold.png") > 0)
                             {
-                                {
-                                    demnguoc(5, rowIndex, "Delivery");
-                                    query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
-                                    if (query.Count() > 0)
-                                    {
-                                        query[0].Click();
-                                    }
-                                }
+                                Market mk = new Market();
+                                mk.Name = "gold";
+                                lstobj.Add(mk);
+
+
+                            }
+                            if (image.GetAttribute("src").IndexOf("img/wood.png") > 0)
+                            {
+                                Market mk = new Market();
+                                mk.Name = "wood";
+                                lstobj.Add(mk);
+                            }
+                            if (image.GetAttribute("src").IndexOf("img/rock.png") > 0)
+                            {
+                                Market mk = new Market();
+                                mk.Name = "rock";
+                                lstobj.Add(mk);
                             }
                         }
+                      
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            if (lstobj[i].Name == "gold")
+                            {
+                                lstobj[i].Value = int.Parse(str[i]).ToString();
+                            }
+                            if (lstobj[i].Name == "wood")
+                            {
+                                lstobj[i].Value = int.Parse(str[i]).ToString();
+                            }
+                            if (lstobj[i].Name == "rock")
+                            {
+                                lstobj[i].Value = int.Parse(str[i]).ToString();
+                            }
+                        }
+                         bool checkgold = false;
+                        bool checkwood = false;
+                        bool checkrock = false;
+                        for (int i = 0; i < lstobj.Count;i++)
+                        {
+                            if(lstobj[i].Name == "gold" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            {
+                                checkgold = true;
+                            }  
+                          
 
+                            if (lstobj[i].Name == "wood" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            {
+                                checkwood = true;
+                            }
+                           
+                            if (lstobj[i].Name == "rock" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            {
+                                checkrock = true;
+                            }                          
+                        }
+                       if((checkgold&& checkwood && checkrock && lstobj.Count>2) || ((checkgold && checkwood || checkwood && checkrock || checkgold && checkrock) && lstobj.Count == 2))
+                        {
+                            demnguoc(5, rowIndex, "Delivery");
+                            query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
+                            if (query.Count() > 0)
+                            {
+                                query[0].Click();
+                            }
+                        }                      
                     }
                     demnguoc(RamdomTime(4, 7), rowIndex, "Back home");
                     query = driver.FindElements(By.XPath("/html/body/center/center/a/input"));
@@ -485,6 +545,11 @@ namespace CamelBTC
             public int Steel { get; set; }
             public int Food { get; set; }
             public string Star { get; set; }
+        }
+        public class Market
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
         }
     }
 
