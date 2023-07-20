@@ -1,10 +1,12 @@
-﻿using OpenQA.Selenium;
+﻿using Newtonsoft.Json;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,10 +23,13 @@ namespace CamelBTC
         public Form1()
         {
             InitializeComponent();
-            var account = new Account();
-            account.id = "nlduong2007@gmail.com";
-            account.pass = "123qwe!@#";
-            listAccount.Add(account);
+            StreamReader r = new StreamReader("Account.json");
+            string jsonString = r.ReadToEnd();
+            listAccount = JsonConvert.DeserializeObject<List<Account>>(jsonString);
+            //var account = new Account();
+            //account.id = "nlduong2007@gmail.com";
+            //account.pass = "123qwe!@#";
+            //listAccount.Add(account);
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("#", typeof(int));
             dataTable.Columns.Add("ID", typeof(string));
@@ -162,7 +167,7 @@ namespace CamelBTC
         {
             try
             {
-                var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[2]/td[1]/center/table/tbody/tr/td/center/a"));                
+                var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[2]/td[1]/center/table/tbody/tr/td/center/a"));
                 if (query.Count() > 0)
                 {
                     foreach (var item in query)
@@ -197,6 +202,46 @@ namespace CamelBTC
                 throw ex;
             }
         }
+
+        private void claimSteel(IWebDriver driver, int rowIndex)
+        {
+            try
+            {
+                var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[2]/td[2]/table/tbody/tr/td/center/a"));
+                if (query.Count() > 0)
+                {
+                    foreach (var item in query)
+                    {
+                        if (item.GetAttribute("href").IndexOf("claim=1&type=steel") > 0)
+                        {
+                            IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
+                            executor.ExecuteScript("arguments[0].click();", item);
+                            break;
+                        }
+                    }
+
+                }
+                demnguoc(10, rowIndex, "Claim Steel");
+                query = driver.FindElements(By.XPath("/html/body/center/center/table[1]/tbody/tr/td[1]/center/font"));
+                dataGrid.Rows[rowIndex].Cells[4].Value = query[0].Text;
+
+                query = driver.FindElements(By.XPath(" //*[@id=\"button1\"]"));
+                if (query.Count() > 0)
+                {
+                    query[0].Click();
+                }
+                demnguoc(10, rowIndex, "Về trang chính");
+                query = driver.FindElements(By.XPath(" //*[@id=\"button1\"]"));
+                if (query.Count() > 0)
+                {
+                    query[0].Click();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         private void getDataAccount(IWebDriver driver, int rowIndex)
         {
             listAccount[rowIndex].Gold = int.Parse(driver.FindElements(By.XPath("/html/body/center/center/font/b[1]"))[0].Text);
@@ -208,8 +253,8 @@ namespace CamelBTC
         private void checkMarket(IWebDriver driver, int rowIndex)
         {
             try
-            {              
-               var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[1]/td[3]/table[1]/tbody/tr/td/center/a/input"));
+            {
+                var query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td/center/table[1]/tbody/tr[1]/td[3]/table[1]/tbody/tr/td/center/a/input"));
 
 
                 if (query.Count() > 0)
@@ -280,13 +325,26 @@ namespace CamelBTC
                                 }
                             }
                         }
+                        if (src.IndexOf("steel") > 0)
+                        {
+                            var rock = int.Parse(request);
+                            if (listAccount[rowIndex].Rock >= rock)
+                            {
+                                demnguoc(RamdomTime(4, 7), rowIndex, "Delivery");
+                                query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
+                                if (query.Count() > 0)
+                                {
+                                    query[0].Click();
+                                }
+                            }
+                        }
                     }
                     else
                     {
                         var str = request.Replace("\n", "").Split('\r');
                         var images = query[0].FindElements(By.TagName("img"));
                         List<Market> lstobj = new List<Market>();
-                      
+
                         foreach (var image in images)
                         {
                             if (image.GetAttribute("src").IndexOf("img/gold.png") > 0)
@@ -309,8 +367,14 @@ namespace CamelBTC
                                 mk.Name = "rock";
                                 lstobj.Add(mk);
                             }
+                            if (image.GetAttribute("src").IndexOf("img/steel.png") > 0)
+                            {
+                                Market mk = new Market();
+                                mk.Name = "steel";
+                                lstobj.Add(mk);
+                            }
                         }
-                      
+
                         for (int i = 0; i < str.Length; i++)
                         {
                             if (lstobj[i].Name == "gold")
@@ -325,29 +389,32 @@ namespace CamelBTC
                             {
                                 lstobj[i].Value = int.Parse(str[i]).ToString();
                             }
-                        }
-                         bool checkgold = false;
-                        bool checkwood = false;
-                        bool checkrock = false;
-                        for (int i = 0; i < lstobj.Count;i++)
-                        {
-                            if(lstobj[i].Name == "gold" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            if (lstobj[i].Name == "steel")
                             {
-                                checkgold = true;
-                            }  
-                          
-
+                                lstobj[i].Value = int.Parse(str[i]).ToString();
+                            }
+                        }
+                        var checktrue = 0;
+                        for (int i = 0; i < lstobj.Count; i++)
+                        {
+                            if (lstobj[i].Name == "gold" && listAccount[rowIndex].Gold >= int.Parse(lstobj[i].Value))
+                            {
+                                checktrue = checktrue +1;
+                            }
                             if (lstobj[i].Name == "wood" && listAccount[rowIndex].Log >= int.Parse(lstobj[i].Value))
                             {
-                                checkwood = true;
+                                checktrue = checktrue + 1;
                             }
-                           
                             if (lstobj[i].Name == "rock" && listAccount[rowIndex].Rock >= int.Parse(lstobj[i].Value))
                             {
-                                checkrock = true;
-                            }                          
+                                checktrue = checktrue + 1;
+                            }
+                            if (lstobj[i].Name == "steel" && listAccount[rowIndex].Steel >= int.Parse(lstobj[i].Value))
+                            {
+                                checktrue = checktrue + 1;
+                            }
                         }
-                       if((checkgold&& checkwood && checkrock && lstobj.Count>2) || ((checkgold && checkwood || checkwood && checkrock || checkgold && checkrock) && lstobj.Count == 2))
+                        if ((lstobj.Count == 2 && checktrue == 2) || (lstobj.Count == 3 && checktrue == 3))
                         {
                             demnguoc(5, rowIndex, "Delivery");
                             query = driver.FindElements(By.XPath("/html/body/center/center/table/tbody/tr/td[2]/center/table/tbody/tr[1]/td/center/a[1]/input"));
@@ -355,7 +422,7 @@ namespace CamelBTC
                             {
                                 query[0].Click();
                             }
-                        }                      
+                        }
                     }
                     demnguoc(RamdomTime(4, 7), rowIndex, "Back home");
                     query = driver.FindElements(By.XPath("/html/body/center/center/a/input"));
@@ -388,11 +455,11 @@ namespace CamelBTC
                     cell.Value = "Kết thúc";
                     Thread thread = new Thread((ThreadStart)(async () =>
                     {
-                        var i = 0;  
+                        var i = 0;
                         while (i < 20)
                         {
                             openCamle(e.RowIndex);
-                             i++;
+                            i++;
                         }
                         // query.SendKeys(listAccountSEO[e.RowIndex].pass);
 
@@ -426,7 +493,7 @@ namespace CamelBTC
             try
             {
                 demnguoc(5, RowIndex, "Mở Chorme selenium");
-               
+
                 driver.Navigate().GoToUrl("https://camelbtc.com/index.php");
 
                 //  await viewYoutube(e.RowIndex);
@@ -448,6 +515,7 @@ namespace CamelBTC
                     query = driver.FindElement(By.XPath("/html/body/center/form/input[3]"));
                     demnguoc(RamdomTime(1, 3), RowIndex, "Click Đăng nhập");
                     query.Click();
+                    demnguoc(RamdomTime(3, 5), RowIndex, "Check Robot");
                     var test = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
                     if (test.Count > 0)
                     {
@@ -498,6 +566,17 @@ namespace CamelBTC
                             robot[0].Click();
                         }
                     }
+                    if (chkClaimSteel.Checked)
+                    {
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Chuẩn bị claim Steel");
+                        claimSteel(driver, RowIndex);
+                        demnguoc(RamdomTime(1, 3), RowIndex, "Check robot");
+                        var robot = driver.FindElements(By.XPath("/html/body/center/form/input[3]"));
+                        if (robot.Count > 0)
+                        {
+                            robot[0].Click();
+                        }
+                    }
                     demnguoc(RamdomTime(1, 3), RowIndex, "Load lại tài nguyên");
                     getDataAccount(driver, RowIndex);
                     str = "Gold:" + listAccount[RowIndex].Gold;
@@ -507,7 +586,7 @@ namespace CamelBTC
                     str = str + ",Food: " + listAccount[RowIndex].Food;
 
                     dataGrid.Rows[RowIndex].Cells[3].Value = str;
-                   
+
                     for (int i = 0; i < 5; i++)
                     {
                         if (chkCheckMarket.Checked)
@@ -518,7 +597,7 @@ namespace CamelBTC
                         demnguoc(int.Parse(txtWaitTime.Text), RowIndex, "Chờ lần kế tiếp");
                         driver.Navigate().Refresh();
                         demnguoc(RamdomTime(3, 6), RowIndex, "Load page");
-                    }  
+                    }
                 }
             }
             catch (Exception ex)
@@ -527,7 +606,7 @@ namespace CamelBTC
                 driver.Close();
                 openCamle(RowIndex);
             }
-            }
+        }
         private int RamdomTime(int begin, int end)
         {
             Random rnd = new Random();

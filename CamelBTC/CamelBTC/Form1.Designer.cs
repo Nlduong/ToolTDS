@@ -35,6 +35,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtWaitTime = new System.Windows.Forms.TextBox();
             this.chkClaimRock = new System.Windows.Forms.CheckBox();
+            this.chkClaimSteel = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,11 +110,22 @@
             this.chkClaimRock.Text = "Claim Rock";
             this.chkClaimRock.UseVisualStyleBackColor = true;
             // 
+            // chkClaimSteel
+            // 
+            this.chkClaimSteel.AutoSize = true;
+            this.chkClaimSteel.Location = new System.Drawing.Point(87, 117);
+            this.chkClaimSteel.Name = "chkClaimSteel";
+            this.chkClaimSteel.Size = new System.Drawing.Size(97, 20);
+            this.chkClaimSteel.TabIndex = 17;
+            this.chkClaimSteel.Text = "Claim Steel";
+            this.chkClaimSteel.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1406, 450);
+            this.Controls.Add(this.chkClaimSteel);
             this.Controls.Add(this.chkClaimRock);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtWaitTime);
@@ -137,6 +149,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtWaitTime;
         private System.Windows.Forms.CheckBox chkClaimRock;
+        private System.Windows.Forms.CheckBox chkClaimSteel;
     }
 }
 
